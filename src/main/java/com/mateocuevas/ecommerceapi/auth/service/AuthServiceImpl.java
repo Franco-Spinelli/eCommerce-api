@@ -8,6 +8,9 @@ import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.jwt.JwtService;
 import com.mateocuevas.ecommerceapi.respository.UserRespository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,11 +20,17 @@ public class AuthServiceImpl implements AuthService{
     private final UserRespository userRespository;
 
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
 
     @Override
     public AuthResponse login(LoginRequest loginRequest){
-        return null;
-    }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
+        UserDetails user=userRespository.findByUsername(loginRequest.getUsername()).orElseThrow();
+        String token= jwtService.getToken(user);
+        return AuthResponse.builder()
+                .token(token)
+                .build();
+    } 
 
     @Override
     public AuthResponse signUp(SignUpRequest signUpRequest){
