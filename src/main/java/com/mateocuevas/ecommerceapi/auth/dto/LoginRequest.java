@@ -1,4 +1,4 @@
-package com.mateocuevas.ecommerceapi.dto;
+package com.mateocuevas.ecommerceapi.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
-    private String token;
+public class LoginRequest {
+    String username;
+    String password;
 }

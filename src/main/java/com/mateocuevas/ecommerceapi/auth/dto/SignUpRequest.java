@@ -1,4 +1,4 @@
-package com.mateocuevas.ecommerceapi.dto;
+package com.mateocuevas.ecommerceapi.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SignUpDto {
+public class SignUpRequest {
     private String firstName;
     private String lastName;
-    private String login;
-    private char[] password;
+    private String username;
+    private String password;
 }
