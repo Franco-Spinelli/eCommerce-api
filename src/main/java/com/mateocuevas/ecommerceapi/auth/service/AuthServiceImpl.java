@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,9 +19,10 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService{
 
     private final UserRespository userRespository;
-
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+
 
     @Override
     public AuthResponse login(LoginRequest loginRequest){
@@ -36,7 +38,7 @@ public class AuthServiceImpl implements AuthService{
     public AuthResponse signUp(SignUpRequest signUpRequest){
         User user= User.builder()
                 .username(signUpRequest.getUsername())
-                .password(signUpRequest.getPassword())
+                .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .firstName(signUpRequest.getFirstName())
                 .lastName(signUpRequest.getLastName())
                 .role(UserRole.CUSTOMER)
