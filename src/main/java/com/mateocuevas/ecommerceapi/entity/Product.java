@@ -18,17 +18,20 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    private String name;
+    private String title;
     private Float price;
     @Lob
+    @Column(length = 1000)
     private String description;
-    private Float rating;
+    @Embedded
+    private Rating rating;
     @Lob
-    @Column(columnDefinition = "longblob")
-    private byte[] img;
-
+    private String image;
     @ManyToOne(fetch = FetchType.LAZY,optional = false)
     @JoinColumn(name = "category_id",nullable = false)
     private Category category;
+    @ManyToOne
+    @JoinColumn(name = "admin_id", nullable = false)
+    private User admin;
+
 }

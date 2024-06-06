@@ -17,8 +17,11 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long quantity;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="product_id",nullable = false)
     private Product product;
+    private double totalPrice;
+    @ManyToOne
+    @JoinColumn(name = "cart_id", nullable = false)
+    private Cart cart;
 }

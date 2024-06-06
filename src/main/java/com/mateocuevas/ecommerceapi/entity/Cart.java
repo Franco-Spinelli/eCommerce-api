@@ -1,15 +1,14 @@
 package com.mateocuevas.ecommerceapi.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -18,6 +17,12 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name="cart")
 public class Cart {
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "cart")
-    private List<CartItem> items;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @OneToOne
+    @JoinColumn(name = "customer_id", nullable = false)
+    private User customer;
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<CartItem> cartItems = new HashSet<>();
 }

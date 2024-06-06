@@ -1,5 +1,7 @@
 package com.mateocuevas.ecommerceapi.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.mateocuevas.ecommerceapi.config.CategoryDeserializer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,16 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "category")
+@JsonDeserialize(using = CategoryDeserializer.class)
+@Table(name = "categories")
 public class Category {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
-    @Lob
-    private String description;
-
 }
