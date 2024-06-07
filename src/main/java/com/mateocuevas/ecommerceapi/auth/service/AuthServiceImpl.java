@@ -5,7 +5,7 @@ import com.mateocuevas.ecommerceapi.auth.dto.SignUpRequest;
 import com.mateocuevas.ecommerceapi.auth.dto.AuthResponse;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
-import com.mateocuevas.ecommerceapi.auth.jwt.JwtService;
+import com.mateocuevas.ecommerceapi.jwt.JwtService;
 import com.mateocuevas.ecommerceapi.respository.UserRespository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

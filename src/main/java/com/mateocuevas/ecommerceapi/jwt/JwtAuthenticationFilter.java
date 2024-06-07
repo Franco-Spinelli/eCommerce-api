@@ -1,4 +1,4 @@
-package com.mateocuevas.ecommerceapi.auth.jwt;
+package com.mateocuevas.ecommerceapi.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
