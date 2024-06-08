@@ -8,7 +8,7 @@ import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.jwt.JwtService;
 import com.mateocuevas.ecommerceapi.respository.UserRespository;
-import com.mateocuevas.ecommerceapi.service.CartService;
+import com.mateocuevas.ecommerceapi.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -48,8 +48,14 @@ public class AuthServiceImpl implements AuthService{
                 .build();
         userRespository.save(user);
         if(user.getRole().equals(UserRole.CUSTOMER)){
-            Cart cart = new Cart(null,user,null,0);
-            cartService.saveCart(cart);
+            cartService.saveCart(Cart.builder()
+                    .id(null)
+                    .cartItems(null)
+                    .customer(user)
+                    .totalItems((double) 0)
+                    .totalPrice((double) 0)
+                    .build()
+            );
         }
 
         return AuthResponse.builder()

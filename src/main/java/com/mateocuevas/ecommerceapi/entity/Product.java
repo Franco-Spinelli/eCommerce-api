@@ -33,5 +33,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "admin_id", nullable = false)
     private User admin;
+    private Integer Stock;
 
 }
