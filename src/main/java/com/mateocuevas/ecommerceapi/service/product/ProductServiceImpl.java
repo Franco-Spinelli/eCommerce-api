@@ -7,13 +7,14 @@ import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import com.mateocuevas.ecommerceapi.service.category.CategoryService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;

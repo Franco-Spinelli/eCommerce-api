@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +25,23 @@ public class JwtServiceImpl implements JwtService{
     }
 
     private String getToken(HashMap<String,Object> extraClaims,UserDetails user){
+        String role = getRoleFromUser(user);
         return Jwts
                 .builder()
-                .setClaims(extraClaims)
+                .claim("role", role)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*12))
+                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*24))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
+    private String getRoleFromUser(UserDetails user) {
+        return user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .findFirst()
+                .orElse("ROLE_USER");
+    }
     private Key getKey(){
         byte[] keyBytes= Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
