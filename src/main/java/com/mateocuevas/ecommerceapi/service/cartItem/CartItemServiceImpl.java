@@ -34,10 +34,14 @@ public class CartItemServiceImpl implements CartItemService{
      */
     @Override
     public CartItem productToCartItem(Product product, Integer quantity, Cart cart){
+
         for (CartItem cartItem: cart.getCartItems())
         {
             if (cartItem.getProduct().equals(product)){
                 cartItem.setQuantity(cartItem.getQuantity()+quantity);
+                cartItem.setTotalPrice(cartItem.getTotalPrice() + (quantity*product.getPrice()));
+                cart.setTotalPrice(cart.getTotalPrice() + (quantity*product.getPrice()));
+                cartItem.setCart(cart);
                 return cartItem;
             }
         }
