@@ -4,12 +4,16 @@ import com.mateocuevas.ecommerceapi.dto.CartDTO;
 import com.mateocuevas.ecommerceapi.dto.CartItemDTO;
 import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.CartItem;
+import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.exception.ProductStockException;
 import com.mateocuevas.ecommerceapi.respository.CartRepository;
 
+import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,11 +26,15 @@ public class CartServiceImpl implements CartService {
 
     private final UserService userService;
 
+    private final ProductRepository productRepository;
+
     private final CartItemService cartItemService;
+
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository, UserService userService, CartItemService cartItemService) {
+    public CartServiceImpl(CartRepository cartRepository, UserService userService, ProductRepository productRepository, CartItemService cartItemService) {
         this.cartRepository = cartRepository;
         this.userService = userService;
+        this.productRepository = productRepository;
         this.cartItemService = cartItemService;
     }
 
@@ -43,12 +51,16 @@ public class CartServiceImpl implements CartService {
     public CartDTO addProductToCart(Long productId, Integer quantity) {
         User user=userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
         Cart cart=cartRepository.getCartByUserId(user.getId());
-        CartItem cartItem=cartItemService.productToCartItem(productId,quantity);
-        cartItem.setCart(cart);
+        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        if(product.getStock()<quantity){
+            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
+        }
+        product.setStock(product.getStock()-quantity);
+        productRepository.save(product);
+
+        CartItem cartItem=cartItemService.productToCartItem(product,quantity,cart);
         cartItemService.saveCartItem(cartItem);
-        cart.setTotalItems(cart.getTotalItems() + 1);
-        cart.setTotalPrice(cart.getTotalPrice() + cartItem.getTotalPrice());
-        saveCart(cart);
+        saveCart(cartItem.getCart());
         return createCartDTO(cart);
     }
 

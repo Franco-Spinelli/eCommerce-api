@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.service.cartItem;
 
+import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.CartItem;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.exception.ProductStockException;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -30,16 +33,19 @@ public class CartItemServiceImpl implements CartItemService{
      * @throws ProductStockException If there is not enough stock of the product.
      */
     @Override
-    public CartItem productToCartItem(Long productId, Integer quantity){
-        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
-        if(product.getStock()<quantity){
-            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
+    public CartItem productToCartItem(Product product, Integer quantity, Cart cart){
+        for (CartItem cartItem: cart.getCartItems())
+        {
+            if (cartItem.getProduct().equals(product)){
+                cartItem.setQuantity(cartItem.getQuantity()+quantity);
+                return cartItem;
+            }
         }
-        product.setStock(product.getStock()-quantity);
-        productRepository.save(product);
+        cart.setTotalItems(cart.getTotalItems() + 1);
+        cart.setTotalPrice(cart.getTotalPrice() + (quantity*product.getPrice()));
         return CartItem.builder()
                 .id(null)
-                .cart(null)
+                .cart(cart)
                 .product(product)
                 .quantity(quantity)
                 .totalPrice(quantity*product.getPrice())
