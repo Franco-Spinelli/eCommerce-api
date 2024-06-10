@@ -1,18 +1,17 @@
 package com.mateocuevas.ecommerceapi.controller;
 
-import com.mateocuevas.ecommerceapi.service.ProductService;
+import com.mateocuevas.ecommerceapi.service.product.ProductService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@AllArgsConstructor
 public class ProductController {
-    private final ProductService productService;
 
-    @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
+    private final ProductService productService;
 
     /**
      * This endpoint fetches products from an external API and saves them into the local database.
@@ -24,6 +23,11 @@ public class ProductController {
      */
     @GetMapping("/fetch-products")
     public String fetchAndSaveProducts() {
+        productService.fetchAndSaveProducts();
+        return "Products fetched and saved successfully!";
+    }
+    @GetMapping("/products")
+    public String getProducts() {
         productService.fetchAndSaveProducts();
         return "Products fetched and saved successfully!";
     }

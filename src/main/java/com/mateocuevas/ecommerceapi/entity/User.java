@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -36,10 +38,26 @@ public class User implements UserDetails {
     private UserRole role;
     // For ADMIN
     @OneToMany(mappedBy = "admin", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Product> products;
     // For CUSTOMER
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Cart cart;
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(id, user.id) &&
+                Objects.equals(username, user.username);
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

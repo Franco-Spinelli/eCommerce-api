@@ -1,32 +1,26 @@
-package com.mateocuevas.ecommerceapi.service;
+package com.mateocuevas.ecommerceapi.service.product;
 
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.respository.ProductRepository;
+import com.mateocuevas.ecommerceapi.service.user.UserService;
+import com.mateocuevas.ecommerceapi.service.category.CategoryService;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.management.relation.Role;
-import java.util.Optional;
-
 @Service
-public class ProductServiceImpl implements ProductService{
+@AllArgsConstructor
+public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
     private  final UserService userService;
     private static final String API_URL = "https://fakestoreapi.com/products";
     private final RestTemplate restTemplate;
-
-    @Autowired
-    public ProductServiceImpl(ProductRepository productRepository, CategoryService categoryService, UserService userService, RestTemplate restTemplate) {
-        this.productRepository = productRepository;
-        this.categoryService = categoryService;
-        this.userService = userService;
-        this.restTemplate = restTemplate;
-    }
 
     /**
      * This method fetches a list of products from an external API and saves them into the local database.
@@ -68,6 +62,7 @@ public class ProductServiceImpl implements ProductService{
         }
         product.setCategory(category);
         product.setAdmin(userAdmin);
+        product.setStock(20);
         // Save the product
         productRepository.save(product);
     }

@@ -3,10 +3,13 @@ package com.mateocuevas.ecommerceapi.auth.service;
 import com.mateocuevas.ecommerceapi.auth.dto.LoginRequest;
 import com.mateocuevas.ecommerceapi.auth.dto.SignUpRequest;
 import com.mateocuevas.ecommerceapi.auth.dto.AuthResponse;
+import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.jwt.JwtService;
 import com.mateocuevas.ecommerceapi.respository.UserRespository;
+import com.mateocuevas.ecommerceapi.service.cart.CartService;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,10 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class AuthServiceImpl implements AuthService{
 
     private final UserRespository userRespository;
+    private final CartService cartService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
@@ -44,6 +48,16 @@ public class AuthServiceImpl implements AuthService{
                 .role(UserRole.CUSTOMER)
                 .build();
         userRespository.save(user);
+        if(user.getRole().equals(UserRole.CUSTOMER)){
+            cartService.saveCart(Cart.builder()
+                    .id(null)
+                    .cartItems(null)
+                    .customer(user)
+                    .totalItems((double) 0)
+                    .totalPrice((double) 0)
+                    .build()
+            );
+        }
 
         return AuthResponse.builder()
                 .token(jwtService.getToken(user))
