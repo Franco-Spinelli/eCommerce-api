@@ -5,13 +5,9 @@ import com.mateocuevas.ecommerceapi.entity.CartItem;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.exception.ProductStockException;
 import com.mateocuevas.ecommerceapi.respository.CartItemRepository;
-import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -19,46 +15,67 @@ import java.util.Objects;
 @AllArgsConstructor
 public class CartItemServiceImpl implements CartItemService{
     private final CartItemRepository cartItemRepository;
-    private final ProductRepository productRepository;
 
 
 
     /**
      * This method searches for the product that arrives by parameter in the database, and verifies if it is in stock.
      * If there is the requested quantity, the stock is updated and the cartitem object is returned
-     * @param productId The id of the product that wants to be added to the cart.
+     * @param product The product that wants to be added to the cart.
      * @param quantity The quantity that wants to be added to the cart.
      * @return The CartItem with the data of the product, quantity and the total price.
      * @throws EntityNotFoundException If the product id that was sent is not in the database .
      * @throws ProductStockException If there is not enough stock of the product.
      */
-    @Override
-    public CartItem productToCartItem(Product product, Integer quantity, Cart cart){
 
-        for (CartItem cartItem: cart.getCartItems())
-        {
-            if (cartItem.getProduct().equals(product)){
-                cartItem.setQuantity(cartItem.getQuantity()+quantity);
-                cartItem.setTotalPrice(cartItem.getTotalPrice() + (quantity*product.getPrice()));
-                cart.setTotalPrice(cart.getTotalPrice() + (quantity*product.getPrice()));
-                cartItem.setCart(cart);
-                return cartItem;
-            }
+    @Override
+    public CartItem productToCartItem(Product product, Integer quantity, Cart cart) {
+        CartItem existingCartItem = findCartItemByProduct(cart, product);
+
+        if (existingCartItem != null) {
+            updateCartItem(existingCartItem, quantity, product.getPrice());
+            updateCartTotalPrice(cart, quantity * product.getPrice());
+            return existingCartItem;
         }
-        cart.setTotalItems(cart.getTotalItems() + 1);
-        cart.setTotalPrice(cart.getTotalPrice() + (quantity*product.getPrice()));
-        return CartItem.builder()
-                .id(null)
-                .cart(cart)
-                .product(product)
-                .quantity(quantity)
-                .totalPrice(quantity*product.getPrice())
-                .build();
+
+        return createNewCartItem(cart, product, quantity);
     }
 
     @Override
     public void saveCartItem(CartItem cartItem) {
         cartItemRepository.save(cartItem);
+    }
+
+
+    private CartItem findCartItemByProduct(Cart cart, Product product) {
+        return cart.getCartItems()
+                .stream()
+                .filter(cartItem -> cartItem.getProduct().equals(product))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void updateCartItem(CartItem cartItem, int quantity, float productPrice) {
+        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+        cartItem.setTotalPrice(cartItem.getTotalPrice() + (quantity * productPrice));
+    }
+
+    private void updateCartTotalPrice(Cart cart, double additionalPrice) {
+        cart.setTotalPrice(cart.getTotalPrice() + additionalPrice);
+    }
+
+    private CartItem createNewCartItem(Cart cart, Product product, int quantity) {
+        cart.setTotalItems(cart.getTotalItems() + 1);
+        double totalPrice = quantity * product.getPrice();
+        cart.setTotalPrice(cart.getTotalPrice() + totalPrice);
+
+        return CartItem.builder()
+                .id(null)
+                .cart(cart)
+                .product(product)
+                .quantity(quantity)
+                .totalPrice(totalPrice)
+                .build();
     }
 
 }
