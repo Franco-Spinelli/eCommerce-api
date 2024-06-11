@@ -42,4 +42,11 @@ public class Cart {
         Cart cart = (Cart) o;
         return Objects.equals(id, cart.id);
     }
+
+    public void addCartItem(CartItem cartItem) {
+        if (this.cartItems == null) {
+            this.cartItems = new HashSet<>();
+        }
+        this.cartItems.add(cartItem);
+    }
 }
