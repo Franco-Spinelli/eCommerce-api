@@ -26,9 +26,4 @@ public class ProductController {
         productService.fetchAndSaveProducts();
         return "Products fetched and saved successfully!";
     }
-    @GetMapping("/products")
-    public String getProducts() {
-        productService.fetchAndSaveProducts();
-        return "Products fetched and saved successfully!";
-    }
 }
