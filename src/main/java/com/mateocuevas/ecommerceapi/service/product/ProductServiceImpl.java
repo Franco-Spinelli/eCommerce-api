@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.service.product;
 
+import com.mateocuevas.ecommerceapi.dto.ProductDTO;
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.entity.User;
@@ -7,20 +8,66 @@ import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import com.mateocuevas.ecommerceapi.service.category.CategoryService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryService categoryService;
-    private  final UserService userService;
+    private final UserService userService;
     private static final String API_URL = "https://fakestoreapi.com/products";
     private final RestTemplate restTemplate;
+
+    public Set<ProductDTO> getAllProducts(){
+        List<Product> products= productRepository.findAll();
+        return products.stream()
+                .map(this::createProductDto)
+                .collect(Collectors.toSet());
+    }
+
+
+    public ProductDTO findByTitle(String title){
+        Product product=productRepository.findByTitle(title).orElseThrow(EntityNotFoundException::new);
+        return createProductDto(product);
+    }
+
+    public Set<ProductDTO> findByPriceBetween(double minPrice, double maxPrice){
+        Set<Product> products=productRepository.findByPriceBetween(minPrice,maxPrice);
+        return products.stream()
+                .map(this::createProductDto)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<ProductDTO> findProductByCategory(String categoryRequest){
+        Category category=categoryService.findByName(categoryRequest);
+        Set<Product> products=productRepository.findByCategory(category);
+        return products.stream()
+                .map(this::createProductDto)
+                .collect(Collectors.toSet());
+    }
+
+    private ProductDTO createProductDto(Product product){
+     return ProductDTO.builder()
+             .title(product.getTitle())
+             .price(product.getPrice())
+             .description(product.getDescription())
+             .rating(product.getRating())
+             .image(product.getImage())
+             .category(product.getCategory().getName())
+             .Stock(product.getStock())
+             .build();
+    }
 
     /**
      * This method fetches a list of products from an external API and saves them into the local database.
@@ -50,8 +97,8 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void saveProductInUserAdmin(Product product) {
-        User userAdmin = new User();
-        userAdmin = userService.findByRole(UserRole.ADMIN).orElseThrow();
+        User userAdmin = userService.findByRole(UserRole.ADMIN).orElseThrow();
+        System.out.println(userAdmin.getUsername());
         // Fetch or create the category
         String categoryName = product.getCategory().getName();
         Category category = categoryService.findByName(categoryName);
