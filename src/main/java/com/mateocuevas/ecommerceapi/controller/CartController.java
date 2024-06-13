@@ -34,7 +34,7 @@ public class CartController {
      * @param cartItemRequest The request containing the product ID and quantity to be added to the cart.
      * @return ResponseEntity with the updated cart of the user.
      */
-    @PostMapping("/addProducts")
+    @PostMapping("/add-products")
     public ResponseEntity<?> addProductToCart(@RequestBody CartItemRequest cartItemRequest){
         CartDTO cartDTO = cartService.addProductToCart(cartItemRequest.getProductId(),cartItemRequest.getQuantity());
         return ResponseEntity.ok(cartDTO);

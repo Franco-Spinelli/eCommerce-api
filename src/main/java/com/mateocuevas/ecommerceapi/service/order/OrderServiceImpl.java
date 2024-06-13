@@ -3,6 +3,7 @@ package com.mateocuevas.ecommerceapi.service.order;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
+import com.mateocuevas.ecommerceapi.service.address.AddressService;
 import com.mateocuevas.ecommerceapi.service.cart.CartService;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.orderItem.OrderItemService;
@@ -19,11 +20,12 @@ import java.util.Set;
 @Service
 @AllArgsConstructor
 public class OrderServiceImpl implements OrderService{
-    private OrderRepository orderRepository;
-    private UserService userService;
-    private CartItemService cartItemService;
-    private CartService cartService;
-    private OrderItemService orderItemService;
+    private final OrderRepository orderRepository;
+    private final UserService userService;
+    private final CartItemService cartItemService;
+    private final CartService cartService;
+    private final OrderItemService orderItemService;
+    private final AddressService addressService;
     @Override
     public Order saveOrder(Order order) {
         return orderRepository.save(order);
@@ -56,16 +58,14 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery){
+        Address hasDeliveryAddress=addressService.addressDtoToAddress(hasDelivery.getAddress());
         Order order = Order.builder()
                 .customer(user)
-                .deliveryAddress(hasDelivery.getAddress())
+                .deliveryAddress(hasDeliveryAddress)
                 .hasDelivery(hasDelivery.isHasDelivery())
                 .totalItems(cart.getTotalItems())
                 .totalPrice(cart.getTotalPrice())
                 .build();
-        if(hasDelivery.getAddress().isBlank()){
-            order.setDeliveryAddress(user.getAddress());
-        }
         orderRepository.save(order);
         return order;
     }

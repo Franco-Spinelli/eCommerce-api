@@ -22,7 +22,7 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private boolean hasDelivery;
-    private String deliveryAddress;
+    private Address deliveryAddress;
     private Double totalItems;
     private Double totalPrice;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
