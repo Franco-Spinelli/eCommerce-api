@@ -8,4 +8,5 @@ public interface CartService {
     CartDTO addProductToCart(Long productId, Integer quantity);
     CartDTO getUserCart();
     Cart saveCart(Cart cart);
+    void resetCart(Cart cart);
 }

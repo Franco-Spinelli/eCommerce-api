@@ -6,18 +6,17 @@ import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.CartItem;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.entity.User;
-import com.mateocuevas.ecommerceapi.exception.ProductStockException;
 import com.mateocuevas.ecommerceapi.respository.CartRepository;
 
 import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
+import com.mateocuevas.ecommerceapi.service.product.ProductService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
 
 @Service
 public class CartServiceImpl implements CartService {
@@ -26,15 +25,15 @@ public class CartServiceImpl implements CartService {
 
     private final UserService userService;
 
-    private final ProductRepository productRepository;
+    private final ProductService productService;
 
     private final CartItemService cartItemService;
 
     @Autowired
-    public CartServiceImpl(CartRepository cartRepository, UserService userService, ProductRepository productRepository, CartItemService cartItemService) {
+    public CartServiceImpl(CartRepository cartRepository, UserService userService, ProductService productService, CartItemService cartItemService) {
         this.cartRepository = cartRepository;
         this.userService = userService;
-        this.productRepository = productRepository;
+        this.productService = productService;
         this.cartItemService = cartItemService;
     }
 
@@ -48,10 +47,12 @@ public class CartServiceImpl implements CartService {
      * @return The Cart of the user.
      * @throws IllegalStateException If there is no authenticated user .
      */
+    @Override
+    @Transactional
     public CartDTO addProductToCart(Long productId, Integer quantity) {
         User user=userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
         Cart cart=cartRepository.getCartByUserId(user.getId());
-        Product product = checkStock(productId,quantity);
+        Product product = productService.checkStock(productId,quantity);
         CartItem cartItem=cartItemService.productToCartItem(product,quantity,cart);
         cartItemService.saveCartItem(cartItem);
         saveCart(cart);
@@ -83,26 +84,17 @@ public class CartServiceImpl implements CartService {
                 .totalPrice(cart.getTotalPrice())
                 .build();
         for (CartItem c :cart.getCartItems()) {
-            cartDTO.addCartItem(createCartItemDTO(c));
+            cartDTO.addCartItem(cartItemService.createCartItemDTO(c));
         }
         return cartDTO;
     }
 
-    private CartItemDTO createCartItemDTO(CartItem cartItem) {
-        return CartItemDTO.builder()
-                .quantity(cartItem.getQuantity())
-                .title(cartItem.getProduct().getTitle())
-                .price(cartItem.getProduct().getPrice())
-                .totalPriceItem(cartItem.getTotalPrice())
-                .build();
-    }
-    private Product checkStock(Long productId, Integer quantity){
-        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
-        if(product.getStock()<quantity){
-            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
-        }
-        product.setStock(product.getStock()-quantity);
-        productRepository.save(product);
-        return product;
+
+    public void resetCart(Cart cart){
+        cart.setCartItems(new HashSet<>());
+        cart.setTotalPrice(0.0);
+        cart.setTotalItems(0.0);
+
+        saveCart(cart);
     }
 }
