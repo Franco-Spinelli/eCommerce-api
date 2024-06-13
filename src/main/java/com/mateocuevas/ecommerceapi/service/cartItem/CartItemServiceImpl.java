@@ -42,8 +42,8 @@ public class CartItemServiceImpl implements CartItemService{
     }
 
     @Override
-    public CartItem  saveCartItem(CartItem cartItem) {
-        return cartItemRepository.save(cartItem);
+    public void saveCartItem(CartItem cartItem) {
+         cartItemRepository.save(cartItem);
     }
 
     @Override
