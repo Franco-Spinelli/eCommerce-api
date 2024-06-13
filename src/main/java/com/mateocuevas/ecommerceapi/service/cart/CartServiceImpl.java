@@ -51,13 +51,7 @@ public class CartServiceImpl implements CartService {
     public CartDTO addProductToCart(Long productId, Integer quantity) {
         User user=userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
         Cart cart=cartRepository.getCartByUserId(user.getId());
-        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
-        if(product.getStock()<quantity){
-            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
-        }
-        product.setStock(product.getStock()-quantity);
-        productRepository.save(product);
-
+        Product product = checkStock(productId,quantity);
         CartItem cartItem=cartItemService.productToCartItem(product,quantity,cart);
         cartItemService.saveCartItem(cartItem);
         saveCart(cart);
@@ -78,8 +72,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void saveCart(Cart cart) {
-        cartRepository.save(cart);
+    public Cart saveCart(Cart cart) {
+        return cartRepository.save(cart);
     }
 
     private CartDTO createCartDTO(Cart cart) {
@@ -101,5 +95,14 @@ public class CartServiceImpl implements CartService {
                 .price(cartItem.getProduct().getPrice())
                 .totalPriceItem(cartItem.getTotalPrice())
                 .build();
+    }
+    private Product checkStock(Long productId, Integer quantity){
+        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        if(product.getStock()<quantity){
+            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
+        }
+        product.setStock(product.getStock()-quantity);
+        productRepository.save(product);
+        return product;
     }
 }
