@@ -2,6 +2,7 @@ package com.mateocuevas.ecommerceapi.service.category;
 
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.respository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -6,5 +6,6 @@ import com.mateocuevas.ecommerceapi.entity.Product;
 
 public interface CartItemService {
     CartItem productToCartItem(Product product, Integer quantity, Cart cart);
-    CartItem saveCartItem(CartItem cartItem);
+    void saveCartItem(CartItem cartItem);
+    void deleteCartItem(CartItem cartItem);
 }

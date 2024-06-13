@@ -53,10 +53,10 @@ public class CartServiceImpl implements CartService {
         Cart cart=cartRepository.getCartByUserId(user.getId());
         Product product = checkStock(productId,quantity);
         CartItem cartItem=cartItemService.productToCartItem(product,quantity,cart);
-        CartItem saveCartItem = cartItemService.saveCartItem(cartItem);
-        Cart saveCart = saveCart(saveCartItem.getCart());
-        user.getCart().addCartItem(saveCartItem);
-        return createCartDTO(saveCart);
+        cartItemService.saveCartItem(cartItem);
+        saveCart(cart);
+        cart.getCartItems().add(cartItem);
+        return createCartDTO(cartItem.getCart());
     }
 
     /**
