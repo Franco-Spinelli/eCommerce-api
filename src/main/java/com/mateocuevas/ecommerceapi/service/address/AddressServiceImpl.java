@@ -14,16 +14,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@AllArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
     private final UserService userService;
     private final AddressRepository addressRepository;
 
-    @Autowired
-    public AddressServiceImpl(UserService userService, AddressRepository addressRepository) {
-        this.userService = userService;
-        this.addressRepository = addressRepository;
-    }
+
 
     @Override
     public AddressDTO addAddress(AddressDTO addressDTO) {

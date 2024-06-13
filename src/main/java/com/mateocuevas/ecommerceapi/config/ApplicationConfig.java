@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-    @Autowired
+
     private final UserRepository userRepository;
 
     @Bean

@@ -22,6 +22,8 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private boolean hasDelivery;
+    @ManyToOne
+    @JoinColumn(name = "address_id")
     private Address deliveryAddress;
     private Double totalItems;
     private Double totalPrice;
