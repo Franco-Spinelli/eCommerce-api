@@ -60,7 +60,8 @@ public class CartServiceImpl implements CartService {
 
         CartItem cartItem=cartItemService.productToCartItem(product,quantity,cart);
         cartItemService.saveCartItem(cartItem);
-        saveCart(cartItem.getCart());
+        saveCart(cart);
+        cart.getCartItems().add(cartItem);
         return createCartDTO(cartItem.getCart());
     }
 

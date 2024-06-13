@@ -44,7 +44,8 @@ public class AuthServiceImpl implements AuthService{
                 .password(passwordEncoder.encode(signUpRequest.getPassword()))
                 .firstName(signUpRequest.getFirstName())
                 .lastName(signUpRequest.getLastName())
-                .role(UserRole.ADMIN)
+                .address(signUpRequest.getAddress())
+                .role(UserRole.CUSTOMER)
                 .build();
         userRepository.save(user);
         if(user.getRole().equals(UserRole.CUSTOMER)){
