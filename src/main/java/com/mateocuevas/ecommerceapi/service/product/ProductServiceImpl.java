@@ -5,6 +5,7 @@ import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
+import com.mateocuevas.ecommerceapi.exception.ProductStockException;
 import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import com.mateocuevas.ecommerceapi.service.category.CategoryService;
@@ -112,6 +113,16 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(20);
         // Save the product
         productRepository.save(product);
+    }
+
+    public Product checkStock(Long productId, Integer quantity){
+        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        if(product.getStock()<quantity){
+            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
+        }
+        product.setStock(product.getStock()-quantity);
+        productRepository.save(product);
+        return product;
     }
 
 }

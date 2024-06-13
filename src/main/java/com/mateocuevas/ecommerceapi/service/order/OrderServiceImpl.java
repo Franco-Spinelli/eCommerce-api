@@ -50,7 +50,7 @@ public class OrderServiceImpl implements OrderService{
 
         convertCartItemsToOrderItems(cartItems,order);
 
-        resetCart(cart);
+        cartService.resetCart(cart);
 
         return order;
     }
@@ -92,11 +92,5 @@ public class OrderServiceImpl implements OrderService{
         order.setOrderItems(orderItems);
     }
 
-    private void resetCart(Cart cart){
-        cart.setCartItems(new HashSet<>());
-        cart.setTotalPrice(0.0);
-        cart.setTotalItems(0.0);
 
-        cartService.saveCart(cart);
-    }
 }

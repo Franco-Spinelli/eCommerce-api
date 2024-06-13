@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.service.cartItem;
 
+import com.mateocuevas.ecommerceapi.dto.CartItemDTO;
 import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.CartItem;
 import com.mateocuevas.ecommerceapi.entity.Product;
@@ -79,6 +80,15 @@ public class CartItemServiceImpl implements CartItemService{
                 .product(product)
                 .quantity(quantity)
                 .totalPrice(totalPrice)
+                .build();
+    }
+
+    public CartItemDTO createCartItemDTO(CartItem cartItem) {
+        return CartItemDTO.builder()
+                .quantity(cartItem.getQuantity())
+                .title(cartItem.getProduct().getTitle())
+                .price(cartItem.getProduct().getPrice())
+                .totalPriceItem(cartItem.getTotalPrice())
                 .build();
     }
 

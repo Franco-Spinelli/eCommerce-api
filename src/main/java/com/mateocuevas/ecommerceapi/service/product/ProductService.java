@@ -15,4 +15,5 @@ public interface ProductService {
     Set<ProductDTO> findProductByCategory(String categoryRequest);
     void saveProductInUserAdmin(Product product);
     void fetchAndSaveProducts();
+    Product checkStock(Long productId, Integer quantity);
 }
