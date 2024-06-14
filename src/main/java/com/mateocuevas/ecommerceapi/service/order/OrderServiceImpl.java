@@ -64,46 +64,59 @@ public class OrderServiceImpl implements OrderService{
                 .totalPrice(cart.getTotalPrice())
                 .build();
         if(hasDelivery.isHasDelivery()){
-            if(hasDelivery.getAddress().getStreet()!=null) {
-                Address existAddress = addressService.findAddress(hasDelivery.getAddress().getStreet(),hasDelivery.getAddress().getNumber(),hasDelivery.getAddress().getCity());
-               if(existAddress==null){
-                Address newAddress = addressService.addressDtoToAddress(hasDelivery.getAddress());
-                Address address = addressService.addAddress(newAddress);
-                System.out.println(address.getId());
-                order.setDeliveryAddress(address);
-               }else {
-                   order.setDeliveryAddress(existAddress);
-               }
-            }else {
-                List<Address>addressList = new ArrayList<>(user.getAddresses());
-                order.setDeliveryAddress(addressList.getLast());
-            }
+         addressVerificationsInOrder(order,hasDelivery.getAddress(),user);
         }
         orderRepository.save(order);
         return order;
 
     }
-    private void convertCartItemsToOrderItems(Set<CartItem> cartItems, Order order){
-        HashSet<OrderItem> orderItems = new HashSet<>();
-        Iterator<CartItem> iterator = cartItems.iterator();
+    private void addressVerificationsInOrder(Order order,AddressDTO addressDTO, User user){
+        // Check if the street in AddressDTO is not null
+        if (addressDTO.getStreet() != null) {
+            // Find if an existing address matches the given details (street, number, city)
+            Address existAddress = addressService.findAddress(addressDTO.getStreet(), addressDTO.getNumber(), addressDTO.getCity());
+
+            // If no existing address found, create and add a new Address
+            if (existAddress == null) {
+                // Convert AddressDTO to Address object
+                Address newAddress = addressService.addressDtoToAddress(addressDTO);
+                // Save the new address to the database
+                Address address = addressService.addAddress(newAddress);
+                // Set the newly added address as the deliveryAddress for the order
+                order.setDeliveryAddress(address);
+            } else {
+                // Set the existing address as the deliveryAddress for the order
+                order.setDeliveryAddress(existAddress);
+            }
+        } else {
+            // If street in AddressDTO is null, use the last address from user's list of addresses
+            List<Address> addressList = new ArrayList<>(user.getAddresses());
+            order.setDeliveryAddress(addressList.getLast());
+        }
+    }
+    private void convertCartItemsToOrderItems(Set<CartItem> cartItems, Order order) {
+        HashSet<OrderItem> orderItems = new HashSet<>();  // Initialize a HashSet to hold OrderItems
+        Iterator<CartItem> iterator = cartItems.iterator();  // Create an iterator to iterate over cartItems
 
         while (iterator.hasNext()) {
-            CartItem cartItem = iterator.next();
+            CartItem cartItem = iterator.next();  // Get the next CartItem from the iterator
 
+            // Create an OrderItem using builder pattern
             OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .totalPrice(cartItem.getTotalPrice())
-                    .quantity(cartItem.getQuantity())
-                    .product(cartItem.getProduct())
+                    .order(order)                     // Set the Order for the OrderItem
+                    .totalPrice(cartItem.getTotalPrice())  // Set the total price of the OrderItem
+                    .quantity(cartItem.getQuantity())      // Set the quantity of the OrderItem
+                    .product(cartItem.getProduct())        // Set the product of the OrderItem
                     .build();
 
-            orderItemService.saveOrderItem(orderItem);
-            orderItems.add(orderItem);
+            orderItemService.saveOrderItem(orderItem);   // Save the OrderItem using orderItemService
+            orderItems.add(orderItem);                   // Add the OrderItem to the HashSet
 
-            iterator.remove();
-            cartItemService.deleteCartItem(cartItem);
+            iterator.remove();  // Remove the current CartItem from the iterator (and implicitly from cartItems)
+            cartItemService.deleteCartItem(cartItem);   // Delete the CartItem using cartItemService
         }
-        order.setOrderItems(orderItems);
+
+        order.setOrderItems(orderItems);  // Set the HashSet of OrderItems to the Order
     }
 
 
