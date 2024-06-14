@@ -1,6 +1,7 @@
 package com.mateocuevas.ecommerceapi.controller;
 
 import com.mateocuevas.ecommerceapi.dto.AddressDTO;
+import com.mateocuevas.ecommerceapi.entity.Address;
 import com.mateocuevas.ecommerceapi.service.address.AddressService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,23 +11,22 @@ import java.util.Set;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final AddressService addressService;
 
     /**
-     *
-     * REVISAR COMENTARIOS DE ESTE CONTROLLER
-     *
      * This endpoint adds addresses to the set of addresses of the authenticated user.
      * @param addressDTO The request containing the info of the address to add.
      * @return ResponseEntity with the address added.
      */
     @PostMapping("/add-address")
     public ResponseEntity<AddressDTO> addAddress(@RequestBody AddressDTO addressDTO){
-        AddressDTO addressResponse = addressService.addAddress(addressDTO);
-        return ResponseEntity.ok(addressResponse);
+        Address newAddress = addressService.addressDtoToAddress(addressDTO);
+        newAddress = addressService.addAddress(newAddress);
+        addressDTO.setId(newAddress.getId());
+        return ResponseEntity.ok(addressDTO);
     }
 
     /**
@@ -35,7 +35,7 @@ public class UserController {
      * @return ResponseEntity with the address updated.
      */
     @PutMapping("/update-address")
-    public ResponseEntity<AddressDTO> updateAdress(@RequestBody AddressDTO addressDTO){
+    public ResponseEntity<AddressDTO> updateAddress(@RequestBody AddressDTO addressDTO){
         AddressDTO addressResponse = addressService.updateAddress(addressDTO);
         return ResponseEntity.ok(addressResponse);
     }

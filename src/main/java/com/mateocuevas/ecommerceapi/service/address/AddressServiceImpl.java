@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -23,14 +24,20 @@ public class AddressServiceImpl implements AddressService {
 
 
     @Override
-    public AddressDTO addAddress(AddressDTO addressDTO) {
+    public Address addAddress(Address address) {
         User user =userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
-        Address address=addressDtoToAddress(addressDTO);
         address.setCustomer(user);
-        addressRepository.save(address);
-        return addressDTO;
+        return addressRepository.save(address);
     }
 
+    /**
+     * Updates an existing address for the authenticated user.
+     *
+     * @param addressDTO The AddressDTO containing updated address information.
+     * @return The updated AddressDTO.
+     * @throws IllegalStateException if the user is not authenticated.
+     * @throws EntityNotFoundException if the address is not found.
+     */
     @Override
     public AddressDTO updateAddress(AddressDTO addressDTO) {
         User user =userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
@@ -82,5 +89,11 @@ public class AddressServiceImpl implements AddressService {
                 .floor(address.getFloor())
                 .build();
 
+    }
+
+    @Override
+    public Address findAddress(String street, String number, String city) {
+        Optional<Address>optionalAddress = addressRepository.findByStreetAndNumberAndCity(street, number, city);
+        return optionalAddress.orElse(null);
     }
 }

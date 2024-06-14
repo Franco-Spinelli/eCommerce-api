@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.service.order;
 
+import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
@@ -13,9 +14,7 @@ import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -58,16 +57,31 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery){
-        Address hasDeliveryAddress=addressService.addressDtoToAddress(hasDelivery.getAddress());
         Order order = Order.builder()
                 .customer(user)
-                .deliveryAddress(hasDeliveryAddress)
                 .hasDelivery(hasDelivery.isHasDelivery())
                 .totalItems(cart.getTotalItems())
                 .totalPrice(cart.getTotalPrice())
                 .build();
+        if(hasDelivery.isHasDelivery()){
+            if(hasDelivery.getAddress().getStreet()!=null) {
+                Address existAddress = addressService.findAddress(hasDelivery.getAddress().getStreet(),hasDelivery.getAddress().getNumber(),hasDelivery.getAddress().getCity());
+               if(existAddress==null){
+                Address newAddress = addressService.addressDtoToAddress(hasDelivery.getAddress());
+                Address address = addressService.addAddress(newAddress);
+                System.out.println(address.getId());
+                order.setDeliveryAddress(address);
+               }else {
+                   order.setDeliveryAddress(existAddress);
+               }
+            }else {
+                List<Address>addressList = new ArrayList<>(user.getAddresses());
+                order.setDeliveryAddress(addressList.getLast());
+            }
+        }
         orderRepository.save(order);
         return order;
+
     }
     private void convertCartItemsToOrderItems(Set<CartItem> cartItems, Order order){
         HashSet<OrderItem> orderItems = new HashSet<>();

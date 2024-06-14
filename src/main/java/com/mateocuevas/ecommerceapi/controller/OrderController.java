@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/order")
+@RequestMapping("/api/order")
 public class OrderController {
     private OrderService orderService;
     @PostMapping("/create")
