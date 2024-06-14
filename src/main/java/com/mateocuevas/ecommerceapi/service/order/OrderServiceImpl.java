@@ -3,6 +3,7 @@ package com.mateocuevas.ecommerceapi.service.order;
 import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
+import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
 import com.mateocuevas.ecommerceapi.service.address.AddressService;
 import com.mateocuevas.ecommerceapi.service.cart.CartService;
@@ -10,7 +11,6 @@ import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.orderItem.OrderItemService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,27 +71,22 @@ public class OrderServiceImpl implements OrderService{
 
     }
     private void addressVerificationsInOrder(Order order,AddressDTO addressDTO, User user){
-        // Check if the street in AddressDTO is not null
         if (addressDTO.getStreet() != null) {
-            // Find if an existing address matches the given details (street, number, city)
-            Address existAddress = addressService.findAddress(addressDTO.getStreet(), addressDTO.getNumber(), addressDTO.getCity());
+            // Find existing address based on provided details (street, number, city)
+            Address existingAddress = addressService.findAddress(addressDTO.getStreet(), addressDTO.getNumber(), addressDTO.getCity());
 
-            // If no existing address found, create and add a new Address
-            if (existAddress == null) {
-                // Convert AddressDTO to Address object
-                Address newAddress = addressService.addressDtoToAddress(addressDTO);
-                // Save the new address to the database
-                Address address = addressService.addAddress(newAddress);
-                // Set the newly added address as the deliveryAddress for the order
-                order.setDeliveryAddress(address);
-            } else {
-                // Set the existing address as the deliveryAddress for the order
-                order.setDeliveryAddress(existAddress);
-            }
+            // Use existing address or create a new one if not found
+            Address deliveryAddress = existingAddress != null ? existingAddress : addressService.addAddress(addressService.addressDtoToAddress(addressDTO));
+
+            // Set the delivery address for the order
+            order.setDeliveryAddress(deliveryAddress);
         } else {
-            // If street in AddressDTO is null, use the last address from user's list of addresses
+            // Use the last address from user's list if no street provided
             List<Address> addressList = new ArrayList<>(user.getAddresses());
-            order.setDeliveryAddress(addressList.getLast());
+            if (addressList.isEmpty()) {
+                throw new NoDeliveryAddressFoundException("No delivery address found. Please add a valid delivery address.");
+            }
+            order.setDeliveryAddress(addressList.get(addressList.size() - 1));
         }
     }
     private void convertCartItemsToOrderItems(Set<CartItem> cartItems, Order order) {
