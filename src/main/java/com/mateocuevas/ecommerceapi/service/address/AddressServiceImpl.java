@@ -3,6 +3,7 @@ package com.mateocuevas.ecommerceapi.service.address;
 import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.entity.Address;
 import com.mateocuevas.ecommerceapi.entity.User;
+import com.mateocuevas.ecommerceapi.exception.AddressAlreadyExistsException;
 import com.mateocuevas.ecommerceapi.respository.AddressRepository;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import jakarta.persistence.EntityNotFoundException;
@@ -26,6 +27,13 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public Address addAddress(Address address) {
         User user =userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
+        Address existAddress = findAddress(address.getStreet(),address.getNumber(),address.getCity());
+        if(existAddress==null){
+            address.setCustomer(user);
+            addressRepository.save(address);
+        }else {
+            throw new AddressAlreadyExistsException("The address already exist!", address.getStreet() + " " +address.getNumber());
+        }
         address.setCustomer(user);
         return addressRepository.save(address);
     }

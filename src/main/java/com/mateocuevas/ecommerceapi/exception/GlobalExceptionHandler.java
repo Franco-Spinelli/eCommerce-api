@@ -19,4 +19,11 @@ public class GlobalExceptionHandler {
         errorDetails.put("product", ex.getProductTitle());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(AddressAlreadyExistsException.class)
+    public ResponseEntity<?> handleAddressExist(AddressAlreadyExistsException ex, WebRequest request) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("message", ex.getMessage());
+        errorDetails.put("Address", ex.getAddress());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
 }
