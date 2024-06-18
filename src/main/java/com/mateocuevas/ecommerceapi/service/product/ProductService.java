@@ -13,7 +13,10 @@ public interface ProductService {
     ProductDTO findByTitle(String title);
     Set<ProductDTO> findByPriceBetween(double minPrice, double maxPrice);
     Set<ProductDTO> findProductByCategory(String categoryRequest);
+    Product checkStock(Long productId, Integer quantity);
+    ProductDTO productToProductDto(Product product);
+    Product productDtoToProduct(ProductDTO productDTO);
     void saveProductInUserAdmin(Product product);
     void fetchAndSaveProducts();
-    Product checkStock(Long productId, Integer quantity);
+
 }
