@@ -1,6 +1,6 @@
 package com.mateocuevas.ecommerceapi.config;
 
-import com.mateocuevas.ecommerceapi.respository.UserRepository;
+import com.mateocuevas.ecommerceapi.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -42,7 +42,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByUsername(username)
+        return username -> userService.findByUsername(username)
                 .orElseThrow(()-> new UsernameNotFoundException("user not found"));
     }
     @Bean

@@ -7,25 +7,36 @@ import com.mateocuevas.ecommerceapi.exception.ProductAlreadyExistsException;
 import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.product.ProductService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class AdminServiceImpl implements AdminService{
 
-    private ProductRepository productRepository;
     private ProductService productService;
     private UserService userService;
 
     public ProductDTO createProduct(ProductDTO productDTO)
     {
-        if(productRepository.existByTitle(productDTO.getTitle())){
+        if(productService.existByTitle(productDTO.getTitle())){
            throw new ProductAlreadyExistsException("The product already exist!", productDTO.getTitle());
         }
         Product product=productService.productDtoToProduct(productDTO);
         product.setAdmin(userService.findByRole(UserRole.ADMIN).orElseThrow());
-        productRepository.save(product);
+        productService.save(product);
         return productDTO;
     }
+
+    public String deleteProduct(String title){
+        if(productService.existByTitle(title)){
+            throw new EntityNotFoundException("The product doesn't exist");
+        }
+        productService.deleteByTitle(title);
+        return "Product has been successfully deleted.";
+    }
+
 }

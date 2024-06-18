@@ -19,7 +19,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-
     @GetMapping("/get-products")
     public ResponseEntity<Set<ProductDTO>> getAllProducts(){
         Set<ProductDTO> productDTOS=productService.getAllProducts();

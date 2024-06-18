@@ -16,7 +16,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     public Category createCategory(String name){
-        if(categoryRepository.existByName(name)){
+        if(categoryRepository.existsByName(name)){
             throw new EntityExistsException("The category "+name+" already exists ");
         }
         return Category.builder()

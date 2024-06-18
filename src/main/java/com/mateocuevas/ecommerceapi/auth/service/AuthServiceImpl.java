@@ -7,8 +7,8 @@ import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.jwt.JwtService;
-import com.mateocuevas.ecommerceapi.respository.UserRepository;
 import com.mateocuevas.ecommerceapi.service.cart.CartService;
+import com.mateocuevas.ecommerceapi.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService{
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final CartService cartService;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
@@ -30,7 +30,7 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public AuthResponse login(LoginRequest loginRequest){
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
-        UserDetails user= userRepository.findByUsername(loginRequest.getUsername()).orElseThrow();
+        UserDetails user= userService.findByUsername(loginRequest.getUsername()).orElseThrow();
         String token= jwtService.getToken(user);
         return AuthResponse.builder()
                 .token(token)
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService{
                 .lastName(signUpRequest.getLastName())
                 .role(UserRole.CUSTOMER)
                 .build();
-        userRepository.save(user);
+        userService.save(user);
         if(user.getRole().equals(UserRole.CUSTOMER)){
             cartService.saveCart(Cart.builder()
                     .id(null)
