@@ -73,8 +73,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public Cart saveCart(Cart cart) {
-        return cartRepository.save(cart);
+    public void saveCart(Cart cart) {
+        cartRepository.save(cart);
     }
 
     private CartDTO createCartDTO(Cart cart) {

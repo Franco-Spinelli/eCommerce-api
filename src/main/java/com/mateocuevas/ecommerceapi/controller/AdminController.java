@@ -15,18 +15,20 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping("/create-product")
-    public ResponseEntity<ProductDTO> createProduct(@RequestBody  ProductDTO productDTO){
-        ProductDTO newProductDTO= adminService.createProduct(productDTO);
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody ProductDTO productDTO) {
+        ProductDTO newProductDTO = adminService.createProduct(productDTO);
         return ResponseEntity.ok(newProductDTO);
     }
 
     @PutMapping("/update-product")
-    public ResponseEntity<ProductDTO> updateProduct(){
-        return ResponseEntity.ok(new ProductDTO());
+    public ResponseEntity<ProductDTO> updateProduct() {
+
+        ProductDTO newProductDTO = null;
+        return ResponseEntity.ok(newProductDTO);
     }
 
     @DeleteMapping("/delete-product")
-    public ResponseEntity<?> deleteProduct(){
-        return ResponseEntity.ok("Delete");
+    public ResponseEntity<String> deleteProduct(@RequestBody String title) {
+        return ResponseEntity.ok(adminService.deleteProduct(title));
     }
 }
