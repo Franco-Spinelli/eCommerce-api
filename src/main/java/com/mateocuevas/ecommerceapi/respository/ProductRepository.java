@@ -15,5 +15,4 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Set<Product> findByCategory(Category category);
     Set<Product> findByPriceBetween(double minPrice, double maxPrice);
     boolean existsByTitle(String title);
-    void deleteByTitle(String title);
 }

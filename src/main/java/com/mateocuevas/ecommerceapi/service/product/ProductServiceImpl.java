@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,12 +29,15 @@ public class ProductServiceImpl implements ProductService {
     private static final String API_URL = "https://fakestoreapi.com/products";
     private final RestTemplate restTemplate;
 
-    public void deleteByTitle(String title) {
-        productRepository.deleteByTitle(title);
+
+
+
+    @Override
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
     }
 
-
-    public Boolean existByTitle(String title) {
+    public boolean existByTitle(String title) {
         return productRepository.existsByTitle(title);
     }
 
@@ -48,6 +52,11 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO findByTitle(String title){
         Product product=productRepository.findByTitle(title).orElseThrow(EntityNotFoundException::new);
         return productToProductDto(product);
+    }
+
+    @Override
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
     }
 
     public Set<ProductDTO> findByPriceBetween(double minPrice, double maxPrice){
@@ -80,6 +89,7 @@ public class ProductServiceImpl implements ProductService {
 
     public ProductDTO productToProductDto(Product product){
      return ProductDTO.builder()
+             .id(product.getId())
              .title(product.getTitle())
              .price(product.getPrice())
              .description(product.getDescription())

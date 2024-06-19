@@ -12,8 +12,15 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({ProductStockException.class, ProductAlreadyExistsException.class})
+    @ExceptionHandler(ProductStockException.class)
     public ResponseEntity<?> handleProductStockException(ProductStockException ex, WebRequest request) {
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put("message", ex.getMessage());
+        errorDetails.put("product", ex.getProductTitle());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ResponseEntity<?> handleProductExistsException(ProductAlreadyExistsException ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
         errorDetails.put("message", ex.getMessage());
         errorDetails.put("product", ex.getProductTitle());

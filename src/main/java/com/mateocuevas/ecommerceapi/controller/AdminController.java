@@ -21,14 +21,13 @@ public class AdminController {
     }
 
     @PutMapping("/update-product")
-    public ResponseEntity<ProductDTO> updateProduct() {
-
-        ProductDTO newProductDTO = null;
-        return ResponseEntity.ok(newProductDTO);
+    public ResponseEntity<ProductDTO> updateProduct(@RequestBody ProductDTO productDTO) {
+        ProductDTO response = adminService.updateProduct(productDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete-product")
-    public ResponseEntity<String> deleteProduct(@RequestBody String title) {
-        return ResponseEntity.ok(adminService.deleteProduct(title));
+    public ResponseEntity<String> deleteProduct(@RequestBody Long id) {
+        return ResponseEntity.ok(adminService.deleteProduct(id));
     }
 }

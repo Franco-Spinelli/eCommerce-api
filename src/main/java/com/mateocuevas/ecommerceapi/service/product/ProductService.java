@@ -6,14 +6,16 @@ import com.mateocuevas.ecommerceapi.entity.Product;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface ProductService {
-    void deleteByTitle(String title);
-    Boolean existByTitle(String title);
+    void deleteById(Long id);
+    boolean existByTitle(String title);
     Set<ProductDTO> getAllProducts();
     ProductDTO findByTitle(String title);
+    Optional<Product> findById(Long id);
     Set<ProductDTO> findByPriceBetween(double minPrice, double maxPrice);
     Set<ProductDTO> findProductByCategory(String categoryRequest);
     Product checkStock(Long productId, Integer quantity);
