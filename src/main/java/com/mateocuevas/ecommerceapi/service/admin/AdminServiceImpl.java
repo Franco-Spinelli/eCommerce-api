@@ -29,4 +29,9 @@ public class AdminServiceImpl implements AdminService{
         productService.save(product);
         return productDTO;
     }
+
+    @Override
+    public String deleteProduct(String title) {
+        return null;
+    }
 }

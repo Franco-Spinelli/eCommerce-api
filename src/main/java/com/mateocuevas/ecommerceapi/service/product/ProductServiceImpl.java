@@ -12,6 +12,7 @@ import com.mateocuevas.ecommerceapi.service.category.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -26,6 +27,15 @@ public class ProductServiceImpl implements ProductService {
     private final UserService userService;
     private static final String API_URL = "https://fakestoreapi.com/products";
     private final RestTemplate restTemplate;
+
+    public void deleteByTitle(String title) {
+        productRepository.deleteByTitle(title);
+    }
+
+
+    public Boolean existByTitle(String title) {
+        return productRepository.existsByTitle(title);
+    }
 
     public Set<ProductDTO> getAllProducts(){
         List<Product> products= productRepository.findAll();

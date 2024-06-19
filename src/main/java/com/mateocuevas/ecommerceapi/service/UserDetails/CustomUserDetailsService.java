@@ -1,7 +1,7 @@
 package com.mateocuevas.ecommerceapi.service.UserDetails;
 
 import com.mateocuevas.ecommerceapi.entity.User;
-import com.mateocuevas.ecommerceapi.respository.UserRepository;
+import com.mateocuevas.ecommerceapi.service.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,11 +17,11 @@ import java.util.Optional;
 @AllArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<User> userOptional = userRepository.findByUsername(username);
+        Optional<User> userOptional = userService.findByUsername(username);
         User user = userOptional.orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),

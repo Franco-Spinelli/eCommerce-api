@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public interface ProductService {
+    void deleteByTitle(String title);
+    Boolean existByTitle(String title);
     Set<ProductDTO> getAllProducts();
     ProductDTO findByTitle(String title);
     Set<ProductDTO> findByPriceBetween(double minPrice, double maxPrice);

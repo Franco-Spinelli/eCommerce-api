@@ -16,8 +16,6 @@ public class AdminController {
 
     @PostMapping("/create-product")
     public ResponseEntity<ProductDTO> createProduct(@RequestBody  ProductDTO productDTO){
-        System.out.println(productDTO.getTitle());
-        System.out.println("//////////////////");
         ProductDTO newProductDTO= adminService.createProduct(productDTO);
         return ResponseEntity.ok(newProductDTO);
     }
