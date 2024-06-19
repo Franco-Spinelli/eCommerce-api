@@ -11,9 +11,8 @@ import com.mateocuevas.ecommerceapi.service.user.UserService;
 import com.mateocuevas.ecommerceapi.service.category.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -30,36 +29,67 @@ public class ProductServiceImpl implements ProductService {
     private static final String API_URL = "https://fakestoreapi.com/products";
     private final RestTemplate restTemplate;
 
+
+
+
+    @Override
+    public void deleteById(Long id) {
+        productRepository.deleteById(id);
+    }
+
+    public boolean existByTitle(String title) {
+        return productRepository.existsByTitle(title);
+    }
+
     public Set<ProductDTO> getAllProducts(){
         List<Product> products= productRepository.findAll();
         return products.stream()
-                .map(this::createProductDto)
+                .map(this::productToProductDto)
                 .collect(Collectors.toSet());
     }
 
 
     public ProductDTO findByTitle(String title){
         Product product=productRepository.findByTitle(title).orElseThrow(EntityNotFoundException::new);
-        return createProductDto(product);
+        return productToProductDto(product);
+    }
+
+    @Override
+    public Optional<Product> findById(Long id) {
+        return productRepository.findById(id);
     }
 
     public Set<ProductDTO> findByPriceBetween(double minPrice, double maxPrice){
         Set<Product> products=productRepository.findByPriceBetween(minPrice,maxPrice);
         return products.stream()
-                .map(this::createProductDto)
+                .map(this::productToProductDto)
                 .collect(Collectors.toSet());
     }
 
     public Set<ProductDTO> findProductByCategory(String categoryRequest){
         Category category=categoryService.findByName(categoryRequest);
+        if(category==null){
+            throw  new EntityNotFoundException();
+        }
         Set<Product> products=productRepository.findByCategory(category);
         return products.stream()
-                .map(this::createProductDto)
+                .map(this::productToProductDto)
                 .collect(Collectors.toSet());
     }
 
-    private ProductDTO createProductDto(Product product){
+    public Product checkStock(Long productId, Integer quantity){
+        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        if(product.getStock()<quantity){
+            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
+        }
+        product.setStock(product.getStock()-quantity);
+        productRepository.save(product);
+        return product;
+    }
+
+    public ProductDTO productToProductDto(Product product){
      return ProductDTO.builder()
+             .id(product.getId())
              .title(product.getTitle())
              .price(product.getPrice())
              .description(product.getDescription())
@@ -68,6 +98,18 @@ public class ProductServiceImpl implements ProductService {
              .category(product.getCategory().getName())
              .Stock(product.getStock())
              .build();
+    }
+
+    public Product productDtoToProduct(ProductDTO productDTO){
+        return Product.builder()
+                .title(productDTO.getTitle())
+                .price(productDTO.getPrice())
+                .description(productDTO.getDescription())
+                .rating(productDTO.getRating())
+                .image(productDTO.getImage())
+                .category(categoryService.createCategory(productDTO.getCategory()))
+                .Stock(productDTO.getStock())
+                .build();
     }
 
     /**
@@ -87,6 +129,17 @@ public class ProductServiceImpl implements ProductService {
             }
         }
     }
+
+    @Override
+    public boolean existsByTitle(String title) {
+        return productRepository.existsByTitle(title);
+    }
+
+    @Override
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
     /**
      * This method assigns an admin user to a product and saves it into the local database.
      * It also fetches or creates the appropriate category for the product.
@@ -98,7 +151,7 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void saveProductInUserAdmin(Product product) {
-        User userAdmin = userService.findByRole(UserRole.ADMIN).orElseThrow();
+        User userAdmin = userService.findByRole(UserRole.ROLE_ADMIN).orElseThrow();
         System.out.println(userAdmin.getUsername());
         // Fetch or create the category
         String categoryName = product.getCategory().getName();
@@ -113,16 +166,6 @@ public class ProductServiceImpl implements ProductService {
         product.setStock(20);
         // Save the product
         productRepository.save(product);
-    }
-
-    public Product checkStock(Long productId, Integer quantity){
-        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
-        if(product.getStock()<quantity){
-            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
-        }
-        product.setStock(product.getStock()-quantity);
-        productRepository.save(product);
-        return product;
     }
 
 }

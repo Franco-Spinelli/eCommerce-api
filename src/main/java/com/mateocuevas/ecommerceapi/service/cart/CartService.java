@@ -7,6 +7,6 @@ import org.springframework.http.ResponseEntity;
 public interface CartService {
     CartDTO addProductToCart(Long productId, Integer quantity);
     CartDTO getUserCart();
-    Cart saveCart(Cart cart);
+    void saveCart(Cart cart);
     void resetCart(Cart cart);
 }

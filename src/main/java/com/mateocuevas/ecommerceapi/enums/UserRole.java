@@ -1,6 +1,6 @@
 package com.mateocuevas.ecommerceapi.enums;
 
 public enum UserRole {
-    ADMIN,
-    CUSTOMER
+    ROLE_ADMIN,
+    ROLE_CUSTOMER
 }

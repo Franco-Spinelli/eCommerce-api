@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.dto;
 
+import com.mateocuevas.ecommerceapi.entity.Address;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HasDeliveryRequest {
     private boolean hasDelivery;
-    private String address;
+    private AddressDTO address;
 }

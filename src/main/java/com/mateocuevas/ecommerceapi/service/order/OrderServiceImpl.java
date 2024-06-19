@@ -1,29 +1,30 @@
 package com.mateocuevas.ecommerceapi.service.order;
 
+import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
+import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
+import com.mateocuevas.ecommerceapi.service.address.AddressService;
 import com.mateocuevas.ecommerceapi.service.cart.CartService;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.orderItem.OrderItemService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import lombok.AllArgsConstructor;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
 public class OrderServiceImpl implements OrderService{
-    private OrderRepository orderRepository;
-    private UserService userService;
-    private CartItemService cartItemService;
-    private CartService cartService;
-    private OrderItemService orderItemService;
+    private final OrderRepository orderRepository;
+    private final UserService userService;
+    private final CartItemService cartItemService;
+    private final CartService cartService;
+    private final OrderItemService orderItemService;
+    private final AddressService addressService;
     @Override
     public Order saveOrder(Order order) {
         return orderRepository.save(order);
@@ -58,38 +59,59 @@ public class OrderServiceImpl implements OrderService{
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery){
         Order order = Order.builder()
                 .customer(user)
-                .deliveryAddress(hasDelivery.getAddress())
                 .hasDelivery(hasDelivery.isHasDelivery())
                 .totalItems(cart.getTotalItems())
                 .totalPrice(cart.getTotalPrice())
                 .build();
-        if(hasDelivery.getAddress().isBlank()){
-            order.setDeliveryAddress(user.getAddress());
+        if(hasDelivery.isHasDelivery()){
+         addressVerificationsInOrder(order,hasDelivery.getAddress(),user);
         }
         orderRepository.save(order);
         return order;
+
     }
-    private void convertCartItemsToOrderItems(Set<CartItem> cartItems, Order order){
-        HashSet<OrderItem> orderItems = new HashSet<>();
-        Iterator<CartItem> iterator = cartItems.iterator();
+    private void addressVerificationsInOrder(Order order,AddressDTO addressDTO, User user){
+        if (addressDTO.getStreet() != null) {
+            // Find existing address based on provided details (street, number, city)
+            Address existingAddress = addressService.findAddress(addressDTO.getStreet(), addressDTO.getNumber(), addressDTO.getCity());
+
+            // Use existing address or create a new one if not found
+            Address deliveryAddress = existingAddress != null ? existingAddress : addressService.addAddress(addressService.addressDtoToAddress(addressDTO));
+
+            // Set the delivery address for the order
+            order.setDeliveryAddress(deliveryAddress);
+        } else {
+            // Use the last address from user's list if no street provided
+            List<Address> addressList = new ArrayList<>(user.getAddresses());
+            if (addressList.isEmpty()) {
+                throw new NoDeliveryAddressFoundException("No delivery address found. Please add a valid delivery address.");
+            }
+            order.setDeliveryAddress(addressList.get(addressList.size() - 1));
+        }
+    }
+    private void convertCartItemsToOrderItems(Set<CartItem> cartItems, Order order) {
+        HashSet<OrderItem> orderItems = new HashSet<>();  // Initialize a HashSet to hold OrderItems
+        Iterator<CartItem> iterator = cartItems.iterator();  // Create an iterator to iterate over cartItems
 
         while (iterator.hasNext()) {
-            CartItem cartItem = iterator.next();
+            CartItem cartItem = iterator.next();  // Get the next CartItem from the iterator
 
+            // Create an OrderItem using builder pattern
             OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .totalPrice(cartItem.getTotalPrice())
-                    .quantity(cartItem.getQuantity())
-                    .product(cartItem.getProduct())
+                    .order(order)                     // Set the Order for the OrderItem
+                    .totalPrice(cartItem.getTotalPrice())  // Set the total price of the OrderItem
+                    .quantity(cartItem.getQuantity())      // Set the quantity of the OrderItem
+                    .product(cartItem.getProduct())        // Set the product of the OrderItem
                     .build();
 
-            orderItemService.saveOrderItem(orderItem);
-            orderItems.add(orderItem);
+            orderItemService.saveOrderItem(orderItem);   // Save the OrderItem using orderItemService
+            orderItems.add(orderItem);                   // Add the OrderItem to the HashSet
 
-            iterator.remove();
-            cartItemService.deleteCartItem(cartItem);
+            iterator.remove();  // Remove the current CartItem from the iterator (and implicitly from cartItems)
+            cartItemService.deleteCartItem(cartItem);   // Delete the CartItem using cartItemService
         }
-        order.setOrderItems(orderItems);
+
+        order.setOrderItems(orderItems);  // Set the HashSet of OrderItems to the Order
     }
 
 
