@@ -9,24 +9,26 @@ import org.springframework.web.bind.annotation.*;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     private final AdminService adminService;
 
     @PostMapping("/create-product")
-    public ResponseEntity<ProductDTO> createProduct(ProductDTO productDTO){
+    public ResponseEntity<ProductDTO> createProduct(@RequestBody  ProductDTO productDTO){
+        System.out.println(productDTO.getTitle());
+        System.out.println("//////////////////");
         ProductDTO newProductDTO= adminService.createProduct(productDTO);
         return ResponseEntity.ok(newProductDTO);
     }
 
     @PutMapping("/update-product")
     public ResponseEntity<ProductDTO> updateProduct(){
-
+        return ResponseEntity.ok(new ProductDTO());
     }
 
     @DeleteMapping("/delete-product")
-    public ResponseEntity<ProductDTO> deleteProduct(){
-
+    public ResponseEntity<?> deleteProduct(){
+        return ResponseEntity.ok("Delete");
     }
 }

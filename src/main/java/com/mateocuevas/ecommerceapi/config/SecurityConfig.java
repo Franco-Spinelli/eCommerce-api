@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.config;
 
+import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.jwt.JwtAuthenticationFilter;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authRequest ->
                         authRequest
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("api/products/fetch-products").permitAll()
+                                .requestMatchers("/api/products/fetch-products").permitAll()
+                                .requestMatchers("/api/admin/create-product").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager->

@@ -12,7 +12,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ProductStockException.class)
+    @ExceptionHandler({ProductStockException.class, ProductAlreadyExistsException.class})
     public ResponseEntity<?> handleProductStockException(ProductStockException ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
         errorDetails.put("message", ex.getMessage());
@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
         errorDetails.put("Address", ex.getAddress());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(NoDeliveryAddressFoundException.class)
-    public ResponseEntity<?> handleAddressNoExist(NoDeliveryAddressFoundException ex, WebRequest request) {
+    @ExceptionHandler({NoDeliveryAddressFoundException.class,EmailAlreadyExistsException.class})
+    public ResponseEntity<?> handleAddressNoExist(Exception ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
         errorDetails.put("message", ex.getMessage());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);

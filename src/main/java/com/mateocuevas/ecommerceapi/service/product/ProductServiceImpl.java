@@ -48,7 +48,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public Set<ProductDTO> findProductByCategory(String categoryRequest){
-        Category category=categoryService.findByName(categoryRequest).orElseThrow(EntityNotFoundException::new);
+        Category category=categoryService.findByName(categoryRequest);
+        if(category==null){
+            throw  new EntityNotFoundException();
+        }
         Set<Product> products=productRepository.findByCategory(category);
         return products.stream()
                 .map(this::productToProductDto)
@@ -84,8 +87,7 @@ public class ProductServiceImpl implements ProductService {
                 .description(productDTO.getDescription())
                 .rating(productDTO.getRating())
                 .image(productDTO.getImage())
-                .category(categoryService.findByName(productDTO.getCategory())
-                        .orElse(categoryService.createCategory(productDTO.getCategory())))
+                .category(categoryService.createCategory(productDTO.getCategory()))
                 .Stock(productDTO.getStock())
                 .build();
     }
@@ -107,6 +109,17 @@ public class ProductServiceImpl implements ProductService {
             }
         }
     }
+
+    @Override
+    public boolean existsByTitle(String title) {
+        return productRepository.existsByTitle(title);
+    }
+
+    @Override
+    public Product save(Product product) {
+        return productRepository.save(product);
+    }
+
     /**
      * This method assigns an admin user to a product and saves it into the local database.
      * It also fetches or creates the appropriate category for the product.
@@ -118,11 +131,11 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     public void saveProductInUserAdmin(Product product) {
-        User userAdmin = userService.findByRole(UserRole.ADMIN).orElseThrow();
+        User userAdmin = userService.findByRole(UserRole.ROLE_ADMIN).orElseThrow();
         System.out.println(userAdmin.getUsername());
         // Fetch or create the category
         String categoryName = product.getCategory().getName();
-        Category category = categoryService.findByName(categoryName).orElseThrow(EntityNotFoundException::new);
+        Category category = categoryService.findByName(categoryName);
         if (category == null) {
             category = new Category();
             category.setName(categoryName);

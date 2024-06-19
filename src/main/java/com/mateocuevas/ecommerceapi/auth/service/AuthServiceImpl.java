@@ -6,6 +6,7 @@ import com.mateocuevas.ecommerceapi.auth.dto.AuthResponse;
 import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
+import com.mateocuevas.ecommerceapi.exception.EmailAlreadyExistsException;
 import com.mateocuevas.ecommerceapi.jwt.JwtService;
 import com.mateocuevas.ecommerceapi.respository.UserRepository;
 import com.mateocuevas.ecommerceapi.service.cart.CartService;
@@ -38,28 +39,32 @@ public class AuthServiceImpl implements AuthService{
     } 
 
     @Override
-    public AuthResponse signUp(SignUpRequest signUpRequest){
-        User user= User.builder()
-                .username(signUpRequest.getUsername())
-                .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                .firstName(signUpRequest.getFirstName())
-                .lastName(signUpRequest.getLastName())
-                .role(UserRole.CUSTOMER)
-                .build();
-        userRepository.save(user);
-        if(user.getRole().equals(UserRole.CUSTOMER)){
-            cartService.saveCart(Cart.builder()
-                    .id(null)
-                    .cartItems(null)
-                    .customer(user)
-                    .totalItems((double) 0)
-                    .totalPrice((double) 0)
-                    .build()
-            );
-        }
+    public AuthResponse signUp(SignUpRequest signUpRequest) {
+        if(userRepository.findByUsername(signUpRequest.getUsername()).isEmpty()) {
+            User user = User.builder()
+                    .username(signUpRequest.getUsername())
+                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                    .firstName(signUpRequest.getFirstName())
+                    .lastName(signUpRequest.getLastName())
+                    .role(UserRole.ROLE_CUSTOMER)
+                    .build();
+            userRepository.save(user);
+            if (user.getRole().equals(UserRole.ROLE_CUSTOMER)) {
+                cartService.saveCart(Cart.builder()
+                        .id(null)
+                        .cartItems(null)
+                        .customer(user)
+                        .totalItems((double) 0)
+                        .totalPrice((double) 0)
+                        .build()
+                );
+            }
 
-        return AuthResponse.builder()
-                .token(jwtService.getToken(user))
-                .build();
+            return AuthResponse.builder()
+                    .token(jwtService.getToken(user))
+                    .build();
+        }else{
+            throw new EmailAlreadyExistsException("The email address is already registered.");
+        }
     }
 }

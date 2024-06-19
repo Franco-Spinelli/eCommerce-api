@@ -4,6 +4,7 @@ import com.mateocuevas.ecommerceapi.dto.ProductDTO;
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,5 +19,8 @@ public interface ProductService {
     Product productDtoToProduct(ProductDTO productDTO);
     void saveProductInUserAdmin(Product product);
     void fetchAndSaveProducts();
+    boolean existsByTitle(String title);
+    Product save(Product product);
+
 
 }

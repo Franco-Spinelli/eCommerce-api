@@ -16,12 +16,15 @@ public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
 
     public Category createCategory(String name){
-        if(categoryRepository.existByName(name)){
-            throw new EntityExistsException("The category "+name+" already exists ");
+        Category category = categoryRepository.findByNameIgnoreCase(name);
+        if(category!=null){
+            return category;
         }
-        return Category.builder()
+        Category newCategory = Category.builder()
                 .name(name)
                 .build();
+        categoryRepository.save(newCategory);
+        return newCategory;
     }
 
     @Override
@@ -30,7 +33,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Optional<Category> findByName(String categoryName) {
-        return Optional.ofNullable(categoryRepository.findByName(categoryName));
+    public Category findByName(String categoryName) {
+        return categoryRepository.findByName(categoryName);
+    }
+
+    @Override
+    public Optional<Category> findByNameIgnoreCase(String name) {
+        return Optional.ofNullable(categoryRepository.findByNameIgnoreCase(name));
     }
 }
