@@ -48,14 +48,26 @@ public class AddressServiceImpl implements AddressService {
      */
     @Override
     public AddressDTO updateAddress(AddressDTO addressDTO) {
-        User user =userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
-        Address address=addressRepository.findById(addressDTO.getId()).orElseThrow(EntityNotFoundException::new);
-        address.setCountry(addressDTO.getCountry());
-        address.setCity(addressDTO.getCity());
-        address.setPostalCode(addressDTO.getPostalCode());
-        address.setStreet(addressDTO.getStreet());
-        address.setNumber(addressDTO.getNumber());
-        address.setFloor(addressDTO.getFloor());
+        User user = userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
+        Address address = addressRepository.findById(addressDTO.getId()).orElseThrow(EntityNotFoundException::new);
+        if (addressDTO.getCountry() != null) {
+            address.setCountry(addressDTO.getCountry());
+        }
+        if (addressDTO.getCity() != null) {
+            address.setCity(addressDTO.getCity());
+        }
+        if (addressDTO.getPostalCode() != null) {
+            address.setPostalCode(addressDTO.getPostalCode());
+        }
+        if (addressDTO.getStreet() != null) {
+            address.setStreet(addressDTO.getStreet());
+        }
+        if (addressDTO.getNumber() != null) {
+            address.setNumber(addressDTO.getNumber());
+        }
+        if (addressDTO.getFloor() != null) {
+            address.setFloor(addressDTO.getFloor());
+        }
         addressRepository.save(address);
         return addressDTO;
     }
