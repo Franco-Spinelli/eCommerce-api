@@ -29,4 +29,8 @@ public class AuthController {
     public ResponseEntity<AuthResponse> signUp(@RequestBody SignUpRequest signUpRequest){
         return ResponseEntity.ok(authService.signUp(signUpRequest));
     }
+    @PostMapping(value = "/signup-admin")
+    public ResponseEntity<AuthResponse> signUpAdmin(@RequestBody SignUpRequest signUpRequest){
+        return ResponseEntity.ok(authService.signUpAdmin(signUpRequest));
+    }
 }
