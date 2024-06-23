@@ -41,7 +41,14 @@ public class AdminServiceImpl implements AdminService {
         productService.deleteById(id);
         return "Product has been successfully deleted.";
     }
-
+    /**
+     * Updates an existing product with information provided in the ProductDTO.
+     *
+     * @param productDTO The ProductDTO containing updated product information.
+     * @return The updated ProductDTO.
+     * @throws ProductAlreadyExistsException if another product with the same title already exists.
+     * @throws EntityNotFoundException if the product with the specified ID is not found.
+     */
     @Override
     public ProductDTO updateProduct(ProductDTO productDTO) {
         Optional<Product> optionalProduct = productService.findById(productDTO.getId());

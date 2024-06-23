@@ -68,4 +68,22 @@ public class AuthServiceImpl implements AuthService{
             throw new EmailAlreadyExistsException("The email address is already registered.");
         }
     }
+    @Override
+    public AuthResponse signUpAdmin(SignUpRequest signUpRequest) {
+        if(userService.findByUsername(signUpRequest.getUsername()).isEmpty()) {
+            User user = User.builder()
+                    .username(signUpRequest.getUsername())
+                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                    .firstName(signUpRequest.getFirstName())
+                    .lastName(signUpRequest.getLastName())
+                    .role(UserRole.ROLE_ADMIN)
+                    .build();
+            userService.save(user);
+            return AuthResponse.builder()
+                    .token(jwtService.getToken(user))
+                    .build();
+        }else{
+            throw new EmailAlreadyExistsException("The email address is already registered.");
+        }
+    }
 }

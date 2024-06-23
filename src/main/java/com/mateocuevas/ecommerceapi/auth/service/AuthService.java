@@ -7,4 +7,5 @@ import com.mateocuevas.ecommerceapi.auth.dto.AuthResponse;
 public interface AuthService {
     AuthResponse login(LoginRequest loginRequest);
     AuthResponse signUp(SignUpRequest signUpRequest);
+    AuthResponse signUpAdmin(SignUpRequest signUpRequest);
 }
