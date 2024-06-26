@@ -50,4 +50,18 @@ public class ProductController {
         productService.fetchAndSaveProducts();
         return "Products fetched and saved successfully!";
     }
+    /**
+     * This endpoint fetches additional products from an extended external API source and saves them into the local database.
+     * It retrieves a larger set of products compared to the default source.
+     *
+     * It is intended for scenarios where more products are needed beyond the initial database population.
+     * Before using this endpoint, ensure that an admin user exists in the system.
+     *
+     * @return A confirmation message indicating that the additional products have been fetched and saved successfully.
+     */
+    @GetMapping("/fetch-more-products")
+    public String fetchAndSaveProducts2() {
+        productService.fetchAndSaveProductsFromExtendedSource();
+        return "Additional products fetched and saved successfully!";
+    }
 }

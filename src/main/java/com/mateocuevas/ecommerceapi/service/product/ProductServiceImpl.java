@@ -1,8 +1,11 @@
 package com.mateocuevas.ecommerceapi.service.product;
 
+import com.mateocuevas.ecommerceapi.api.ProductApi;
+import com.mateocuevas.ecommerceapi.api.ProductApiResponse;
 import com.mateocuevas.ecommerceapi.dto.ProductDTO;
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
+import com.mateocuevas.ecommerceapi.entity.Rating;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.exception.ProductStockException;
@@ -12,12 +15,9 @@ import com.mateocuevas.ecommerceapi.service.category.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,6 +112,34 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
+
+    public Product productApiToProduct(ProductApi productApi) {
+        User userAdmin = userService.findByRole(UserRole.ROLE_ADMIN).orElseThrow();
+
+        Random random = new Random();
+        double rate = random.nextDouble() * 5;
+        int count = random.nextInt(200);
+        Rating rating = Rating.builder()
+                .rate(rate)
+                .count(count)
+                .build();
+        Category category = Category.builder()
+                .id(null)
+                .name(productApi.getCategory())
+                .build();
+        return Product.builder()
+                .id(null)
+                .price(productApi.getPrice().floatValue())
+                .admin(userAdmin)
+                .Stock(productApi.getStock())
+                .title(productApi.getTitle())
+                .category(category)
+                .image(productApi.getImages().getFirst())
+                .description(productApi.getDescription())
+                .rating(rating)
+                .build();
+    }
+
     /**
      * This method fetches a list of products from an external API and saves them into the local database.
      *
@@ -127,6 +155,21 @@ public class ProductServiceImpl implements ProductService {
             for (Product product : products) {
                 saveProductInUserAdmin(product);
             }
+        }
+    }
+    public void fetchAndSaveProductsFromExtendedSource() {
+        String apiUrl = "https://dummyjson.com/products?limit=190";
+        ProductApiResponse response = restTemplate.getForObject(apiUrl, ProductApiResponse.class);
+        if (response != null && response.getProducts() != null) {
+            for (ProductApi productApi : response.getProducts()) {
+                if(!Objects.equals(productApi.getCategory(), "groceries")){
+                    Product product = productApiToProduct(productApi);
+                    saveProductInUserAdmin(product);
+                }
+
+            }
+        } else {
+            System.out.println("Error in the API");
         }
     }
 
