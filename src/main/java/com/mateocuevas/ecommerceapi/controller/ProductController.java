@@ -1,6 +1,8 @@
 package com.mateocuevas.ecommerceapi.controller;
 
 import com.mateocuevas.ecommerceapi.dto.ProductDTO;
+import com.mateocuevas.ecommerceapi.entity.Category;
+import com.mateocuevas.ecommerceapi.service.category.CategoryService;
 import com.mateocuevas.ecommerceapi.service.product.ProductService;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -20,6 +23,13 @@ import java.util.Set;
 public class ProductController {
 
     private final ProductService productService;
+    private final CategoryService categoryService;
+
+    @GetMapping("/get-categories")
+    public ResponseEntity<List<Category>> getAllCategories(){
+        List<Category> categories=categoryService.getCategories();
+        return ResponseEntity.ok(categories);
+    }
 
     @GetMapping("/get-products")
     public ResponseEntity<Set<ProductDTO>> getAllProducts(){

@@ -8,12 +8,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+
+    public List<Category> getCategories(){
+        return categoryRepository.findAll();
+    }
 
     public Category createCategory(String name){
         Category category = categoryRepository.findByNameIgnoreCase(name);
