@@ -117,7 +117,8 @@ public class ProductServiceImpl implements ProductService {
         User userAdmin = userService.findByRole(UserRole.ROLE_ADMIN).orElseThrow();
 
         Random random = new Random();
-        double rate = random.nextDouble() * 5;
+        double rate = 3 + random.nextDouble() * (5 - 3);
+        rate = Math.round(rate * 10.0) / 10.0;
         int count = random.nextInt(200);
         Rating rating = Rating.builder()
                 .rate(rate)
