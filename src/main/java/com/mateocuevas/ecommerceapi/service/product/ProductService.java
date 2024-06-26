@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.service.product;
 
+import com.mateocuevas.ecommerceapi.api.ProductApi;
 import com.mateocuevas.ecommerceapi.dto.ProductDTO;
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
@@ -23,6 +24,7 @@ public interface ProductService {
     Product productDtoToProduct(ProductDTO productDTO);
     void saveProductInUserAdmin(Product product);
     void fetchAndSaveProducts();
+    void fetchAndSaveProductsFromExtendedSource();
     boolean existsByTitle(String title);
     Product save(Product product);
 
