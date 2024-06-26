@@ -89,6 +89,7 @@ public class CartItemServiceImpl implements CartItemService{
                 .quantity(cartItem.getQuantity())
                 .title(cartItem.getProduct().getTitle())
                 .price(cartItem.getProduct().getPrice())
+                .img(cartItem.getProduct().getImage())
                 .totalPriceItem(cartItem.getTotalPrice())
                 .build();
     }
