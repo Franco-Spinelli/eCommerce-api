@@ -36,6 +36,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/products/fetch-more-products").permitAll()
                                 .requestMatchers("/api/products/get-products").permitAll()
                                 .requestMatchers("/api/products/get-categories").permitAll()
+                                .requestMatchers("/v3/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
