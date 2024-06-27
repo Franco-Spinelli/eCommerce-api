@@ -54,4 +54,4 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
 - Open your web browser and navigate to http://localhost:8080.
 - Explore the API documentation:
 
-- View detailed API documentation at Swagger UI.
+- View detailed API documentation at [Swagger UI](http://localhost:8080/swagger-ui.html).
