@@ -32,3 +32,26 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
 - Spring Data JPA
 - MySQL
 - OpenAPI (for API documentation)
+
+### Getting Started
+-Prerequisites
+-Before you begin, ensure you have the following installed:
+
+- **Installation**
+- Clone the repository:
+
+- Clone the repository from GitHub.
+- Configure the database:
+
+- Open the src/main/resources/application.properties file.
+- Update the database URL, username, and password according to your MySQL setup.
+- Run the project:
+
+- Compile and run the Spring Boot application using Maven.
+- Usage
+- Access the application:
+
+- Open your web browser and navigate to http://localhost:8080.
+- Explore the API documentation:
+
+- View detailed API documentation at Swagger UI.
