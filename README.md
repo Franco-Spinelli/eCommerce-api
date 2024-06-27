@@ -34,8 +34,8 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
 - OpenAPI (for API documentation)
 
 ### Getting Started
--Prerequisites
--Before you begin, ensure you have the following installed:
+- Prerequisites
+- Before you begin, ensure you have the following installed:
 
 - **Installation**
 - Clone the repository:
