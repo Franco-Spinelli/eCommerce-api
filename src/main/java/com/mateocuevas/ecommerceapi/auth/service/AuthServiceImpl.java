@@ -20,7 +20,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
 
     private final UserService userService;
     private final CartService cartService;
@@ -30,18 +30,18 @@ public class AuthServiceImpl implements AuthService{
 
 
     @Override
-    public AuthResponse login(LoginRequest loginRequest){
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),loginRequest.getPassword()));
-        UserDetails user= userService.findByUsername(loginRequest.getUsername()).orElseThrow();
-        String token= jwtService.getToken(user);
+    public AuthResponse login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+        UserDetails user = userService.findByUsername(loginRequest.getUsername()).orElseThrow();
+        String token = jwtService.getToken(user);
         return AuthResponse.builder()
                 .token(token)
                 .build();
-    } 
+    }
 
     @Override
     public AuthResponse signUp(SignUpRequest signUpRequest) {
-        if(userService.findByUsername(signUpRequest.getUsername()).isEmpty()) {
+        if (userService.findByUsername(signUpRequest.getUsername()).isEmpty()) {
             User user = User.builder()
                     .username(signUpRequest.getUsername())
                     .password(passwordEncoder.encode(signUpRequest.getPassword()))
@@ -64,26 +64,31 @@ public class AuthServiceImpl implements AuthService{
             return AuthResponse.builder()
                     .token(jwtService.getToken(user))
                     .build();
-        }else{
+        } else {
             throw new EmailAlreadyExistsException("The email address is already registered.");
         }
     }
+
     @Override
     public AuthResponse signUpAdmin(SignUpRequest signUpRequest) {
-        if(userService.findByUsername(signUpRequest.getUsername()).isEmpty()) {
-            User user = User.builder()
-                    .username(signUpRequest.getUsername())
-                    .password(passwordEncoder.encode(signUpRequest.getPassword()))
-                    .firstName(signUpRequest.getFirstName())
-                    .lastName(signUpRequest.getLastName())
-                    .role(UserRole.ROLE_ADMIN)
-                    .build();
-            userService.save(user);
-            return AuthResponse.builder()
-                    .token(jwtService.getToken(user))
-                    .build();
-        }else{
-            throw new EmailAlreadyExistsException("The email address is already registered.");
+        if (userService.findByRole(UserRole.ROLE_ADMIN).isEmpty()) {
+            if (userService.findByUsername(signUpRequest.getUsername()).isEmpty()) {
+                User user = User.builder()
+                        .username(signUpRequest.getUsername())
+                        .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                        .firstName(signUpRequest.getFirstName())
+                        .lastName(signUpRequest.getLastName())
+                        .role(UserRole.ROLE_ADMIN)
+                        .build();
+                userService.save(user);
+                return AuthResponse.builder()
+                        .token(jwtService.getToken(user))
+                        .build();
+            } else {
+                throw new EmailAlreadyExistsException("The email address is already registered.");
+            }
+        } else {
+            throw new RuntimeException("user admin already created");
         }
     }
 }
