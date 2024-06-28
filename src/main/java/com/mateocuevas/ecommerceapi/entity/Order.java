@@ -25,8 +25,8 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address deliveryAddress;
-    private Double totalItems;
-    private Double totalPrice;
+    private Integer totalItems;
+    private double totalPrice;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<OrderItem> orderItems = new HashSet<>();

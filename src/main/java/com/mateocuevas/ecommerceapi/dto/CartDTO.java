@@ -22,8 +22,8 @@ public class CartDTO {
 
     private String customer;
     private Set<CartItemDTO> cartItems = new HashSet<>();
-    private Double totalItems;
-    private Double totalPrice;
+    private Integer totalItems;
+    private double totalPrice;
 
     public void addCartItem(CartItemDTO cartItemDTO) {
         if (this.cartItems == null) {

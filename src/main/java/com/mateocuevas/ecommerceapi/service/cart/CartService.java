@@ -9,4 +9,5 @@ public interface CartService {
     CartDTO getUserCart();
     void saveCart(Cart cart);
     void resetCart(Cart cart);
+    void processCart(Cart cart);
 }

@@ -77,15 +77,22 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toSet());
     }
 
-    public Product checkStock(Long productId, Integer quantity){
+    public void processProductStock(Long productId, Integer quantity){
         Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
         if(product.getStock()<quantity){
             throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
         }
         product.setStock(product.getStock()-quantity);
         productRepository.save(product);
+    }
+    public Product checkStock(Long productId, Integer quantity){
+        Product product=productRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+        if(product.getStock()<quantity){
+            throw new ProductStockException("there is not enough stock of the product:", product.getTitle());
+        }
         return product;
     }
+
 
     public ProductDTO productToProductDto(Product product){
      return ProductDTO.builder()

@@ -1,14 +1,11 @@
 package com.mateocuevas.ecommerceapi.service.cart;
 
 import com.mateocuevas.ecommerceapi.dto.CartDTO;
-import com.mateocuevas.ecommerceapi.dto.CartItemDTO;
 import com.mateocuevas.ecommerceapi.entity.Cart;
 import com.mateocuevas.ecommerceapi.entity.CartItem;
 import com.mateocuevas.ecommerceapi.entity.Product;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.respository.CartRepository;
-
-import com.mateocuevas.ecommerceapi.respository.ProductRepository;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.product.ProductService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
@@ -88,13 +85,19 @@ public class CartServiceImpl implements CartService {
         }
         return cartDTO;
     }
-
+    public void processCart(Cart cart) {
+        for (CartItem cartProduct : cart.getCartItems()) {
+            productService.processProductStock(cartProduct.getId(),cartProduct.getQuantity());
+        }
+    }
 
     public void resetCart(Cart cart){
         cart.setCartItems(new HashSet<>());
         cart.setTotalPrice(0.0);
-        cart.setTotalItems(0.0);
+        cart.setTotalItems(0);
 
         saveCart(cart);
     }
+
+
 }

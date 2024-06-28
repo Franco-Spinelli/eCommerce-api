@@ -27,8 +27,8 @@ public class Cart {
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<CartItem> cartItems = new HashSet<>();
-    private Double totalItems;
-    private Double totalPrice;
+    private Integer totalItems;
+    private double totalPrice;
 
     @Override
     public int hashCode() {

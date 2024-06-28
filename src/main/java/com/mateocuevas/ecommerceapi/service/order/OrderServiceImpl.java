@@ -57,6 +57,7 @@ public class OrderServiceImpl implements OrderService{
     }
 
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery){
+        cartService.processCart(cart);
         Order order = Order.builder()
                 .customer(user)
                 .hasDelivery(hasDelivery.isHasDelivery())
@@ -113,6 +114,5 @@ public class OrderServiceImpl implements OrderService{
 
         order.setOrderItems(orderItems);  // Set the HashSet of OrderItems to the Order
     }
-
 
 }

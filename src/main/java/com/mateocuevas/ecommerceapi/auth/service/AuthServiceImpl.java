@@ -55,8 +55,8 @@ public class AuthServiceImpl implements AuthService {
                         .id(null)
                         .cartItems(null)
                         .customer(user)
-                        .totalItems((double) 0)
-                        .totalPrice((double) 0)
+                        .totalItems(0)
+                        .totalPrice(0)
                         .build()
                 );
             }
