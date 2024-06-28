@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/order")
-@CrossOrigin(origins = "http://localhost:4200")
 public class OrderController {
     private OrderService orderService;
     @PostMapping("/create")

@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
 
     private final AdminService adminService;
