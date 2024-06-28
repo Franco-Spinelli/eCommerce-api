@@ -10,4 +10,5 @@ public interface CartItemService {
     void saveCartItem(CartItem cartItem);
     void deleteCartItem(CartItem cartItem);
     CartItemDTO createCartItemDTO(CartItem cartItem);
+    CartItem getCartItemById(Long cartItemId);
 }

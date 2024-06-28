@@ -51,7 +51,10 @@ public class CartItemServiceImpl implements CartItemService{
     public void deleteCartItem(CartItem cartItem) {
         cartItemRepository.delete(cartItem);
     }
-
+    public CartItem getCartItemById(Long cartItemId) {
+        return cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("CartItem not found with ID: " + cartItemId));
+    }
 
     private CartItem findCartItemByProduct(Cart cart, Product product) {
         return cart.getCartItems()
@@ -86,6 +89,7 @@ public class CartItemServiceImpl implements CartItemService{
 
     public CartItemDTO createCartItemDTO(CartItem cartItem) {
         return CartItemDTO.builder()
+                .id(cartItem.getId())
                 .quantity(cartItem.getQuantity())
                 .title(cartItem.getProduct().getTitle())
                 .price(cartItem.getProduct().getPrice())

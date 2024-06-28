@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemDTO {
+    private Long id;
     private Integer quantity;
     private String title;
     private String img;

@@ -56,7 +56,18 @@ public class CartServiceImpl implements CartService {
         cart.getCartItems().add(cartItem);
         return createCartDTO(cartItem.getCart());
     }
-
+    public CartDTO removeCartItem(Long cartItemId) {
+        User user = userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
+        Cart cart = cartRepository.getCartByUserId(user.getId());
+        CartItem cartItem = cartItemService.getCartItemById(cartItemId);
+        if (cartItem != null && cartItem.getCart().getId().equals(cart.getId())) {
+            cartItemService.deleteCartItem(cartItem);
+            saveCart(cart);
+            return createCartDTO(cart);
+        } else {
+            throw new IllegalArgumentException("CartItem not found or does not belong to the current user's cart");
+        }
+    }
     /**
      * This method get all the carItems and the price of all them.
      * @return The Cart of the user who is authenticated.
