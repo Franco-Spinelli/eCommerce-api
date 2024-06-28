@@ -38,19 +38,18 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
 - Before you begin, ensure you have the following installed:
 
 - **Installation**
-- Clone the repository:
-
+ Clone the repository:
 - Clone the repository from GitHub.
-- Configure the database:
-
+  
+ Configure the database:
 - Open the src/main/resources/application.properties file.
 - Update the database URL, username, and password according to your MySQL setup.
-- Run the project:
-
+  
+ Run the project:
 - Compile and run the Spring Boot application using Maven.
 - Usage
-- Access the application:
-
+  
+ Access the application:
 - Open your web browser and navigate to http://localhost:8080.
 - Explore the API documentation:
 
