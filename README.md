@@ -38,6 +38,7 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
 - Spring Data JPA
 - MySQL
 - OpenAPI (for API documentation)
+- JavaMail API (for email sending)
 
 ### Getting Started
 - Prerequisites
@@ -57,6 +58,6 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
   
  Access the application:
 - Open your web browser and navigate to http://localhost:8080.
-- Explore the API documentation:
-
+  
+Explore the API documentation:
 - View detailed API documentation at [Swagger UI](http://localhost:8080/swagger-ui.html).
