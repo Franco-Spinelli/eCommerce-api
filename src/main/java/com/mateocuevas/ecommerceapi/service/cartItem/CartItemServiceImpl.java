@@ -64,7 +64,7 @@ public class CartItemServiceImpl implements CartItemService{
                 .orElse(null);
     }
 
-    private void updateCartItem(CartItem cartItem, int quantity, float productPrice) {
+    private void updateCartItem(CartItem cartItem, int quantity, double productPrice) {
         cartItem.setQuantity(cartItem.getQuantity() + quantity);
         cartItem.setTotalPrice(cartItem.getTotalPrice() + (quantity * productPrice));
     }

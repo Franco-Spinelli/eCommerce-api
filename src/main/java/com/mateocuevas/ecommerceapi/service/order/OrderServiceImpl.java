@@ -1,6 +1,7 @@
 package com.mateocuevas.ecommerceapi.service.order;
 
 import com.mateocuevas.ecommerceapi.dto.AddressDTO;
+import com.mateocuevas.ecommerceapi.dto.EmailDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
 import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
@@ -10,7 +11,11 @@ import com.mateocuevas.ecommerceapi.service.cart.CartService;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.orderItem.OrderItemService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.AllArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,7 @@ public class OrderServiceImpl implements OrderService{
     private final CartService cartService;
     private final OrderItemService orderItemService;
     private final AddressService addressService;
+    private final JavaMailSender javaMailSender;
     @Override
     public Order saveOrder(Order order) {
         return orderRepository.save(order);
@@ -42,7 +48,7 @@ public class OrderServiceImpl implements OrderService{
      */
     @Override
     @Transactional
-    public Order makeOrder(HasDeliveryRequest hasDelivery) {
+    public Order makeOrder(HasDeliveryRequest hasDelivery) throws MessagingException{
         User user = userService.getUserAuthenticated().orElseThrow();
         Cart cart = user.getCart();
         Set<CartItem> cartItems = cart.getCartItems();
@@ -56,7 +62,7 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
-    private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery){
+    private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery) throws MessagingException {
         cartService.processCart(cart);
         Order order = Order.builder()
                 .customer(user)
@@ -67,7 +73,20 @@ public class OrderServiceImpl implements OrderService{
         if(hasDelivery.isHasDelivery()){
          addressVerificationsInOrder(order,hasDelivery.getAddress(),user);
         }
-        orderRepository.save(order);
+        order = orderRepository.save(order);
+      /*
+        EmailDTO email = EmailDTO.builder()
+                .receiver(user.getUsername())
+                .affair("Order Confirmation")
+                .message("Dear " + user.getFirstName() + ",\n\n"
+                        + "Your order has been confirmed. Here are the details:\n"
+                        + "Order ID: " + order.getId() + "\n"
+                        + "Total Amount: " + order.getTotalPrice() + "\n\n"
+                        + "Thank you for shopping with us!\n\n"
+                        + "Best regards,\nThe Ecommerce Team")
+                .build();
+        sendMail(email);
+        */
         return order;
 
     }
@@ -113,6 +132,14 @@ public class OrderServiceImpl implements OrderService{
         }
 
         order.setOrderItems(orderItems);  // Set the HashSet of OrderItems to the Order
+    }
+    public void sendMail(EmailDTO email) throws MessagingException {
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message,true,"UTF-8");
+        helper.setTo(email.getReceiver());
+        helper.setSubject(email.getAffair());
+        helper.setText(email.getMessage());
+        javaMailSender.send(message);
     }
 
 }

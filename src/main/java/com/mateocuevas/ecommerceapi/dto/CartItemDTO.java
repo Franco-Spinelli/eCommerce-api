@@ -18,6 +18,6 @@ public class CartItemDTO {
     private Integer quantity;
     private String title;
     private String img;
-    private Float price;
+    private double price;
     private double totalPriceItem;
 }
