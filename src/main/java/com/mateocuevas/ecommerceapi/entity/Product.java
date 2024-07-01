@@ -24,7 +24,7 @@ public class Product {
     @Column(nullable = false)
     private String title;
     @Column(nullable = false)
-    private Float price;
+    private double price;
     @Lob
     @Column(length = 1000)
     private String description;

@@ -18,6 +18,7 @@ import java.util.function.Function;
 public class JwtServiceImpl implements JwtService{
 
     private static final String SECRET_KEY="j6jdR6JRgZyw8OhlWAX5gmcoujxIi6Uyu4WqkxtP6f0=";
+    private static final long EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours
 
 
     public String getToken(UserDetails user){
@@ -31,7 +32,7 @@ public class JwtServiceImpl implements JwtService{
                 .claim("role", role)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis()+1000*60*60*24))
+                .setExpiration(new Date(System.currentTimeMillis()+EXPIRATION_TIME))
                 .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

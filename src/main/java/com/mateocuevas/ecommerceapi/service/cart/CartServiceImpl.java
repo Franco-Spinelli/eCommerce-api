@@ -62,7 +62,7 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = cartItemService.getCartItemById(cartItemId);
         if (cartItem != null && cartItem.getCart().getId().equals(cart.getId())) {
             cart.setTotalPrice(cart.getTotalPrice() - cartItem.getTotalPrice());
-            cart.setTotalItems(cart.getTotalItems() - cartItem.getQuantity());
+            cart.setTotalItems(cart.getTotalItems() - 1);
             cartItemService.deleteCartItem(cartItem);
             saveCart(cart);
             return createCartDTO(cart);
@@ -100,7 +100,8 @@ public class CartServiceImpl implements CartService {
     }
     public void processCart(Cart cart) {
         for (CartItem cartProduct : cart.getCartItems()) {
-            productService.processProductStock(cartProduct.getId(),cartProduct.getQuantity());
+
+            productService.processProductStock(cartProduct.getProduct().getId(),cartProduct.getQuantity());
         }
     }
 

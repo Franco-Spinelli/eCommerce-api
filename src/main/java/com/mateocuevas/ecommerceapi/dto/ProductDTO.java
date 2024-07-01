@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class ProductDTO {
     private Long id;
     private String title;
-    private Float price;
+    private Double price;
     private String description;
     private Rating rating;
     private String image;

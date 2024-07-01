@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.exception;
 
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,7 +34,7 @@ public class GlobalExceptionHandler {
         errorDetails.put("Address", ex.getAddress());
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler({NoDeliveryAddressFoundException.class,EmailAlreadyExistsException.class})
+    @ExceptionHandler({NoDeliveryAddressFoundException.class,EmailAlreadyExistsException.class,MessagingException.class})
     public ResponseEntity<?> handleAddressNoExist(Exception ex, WebRequest request) {
         Map<String, String> errorDetails = new HashMap<>();
         errorDetails.put("message", ex.getMessage());
