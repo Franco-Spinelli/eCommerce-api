@@ -16,7 +16,13 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
    > - [GET http://localhost:8080/api/products/fetch-products](http://localhost:8080/api/products/fetch-products)
 >  - For a high substantial amount:
    > - [GET http://localhost:8080/api/products/fetch-more-products](http://localhost:8080/api/products/fetch-more-products)
- > - These endpoints retrieve data from two different APIs.
+ > - **These endpoints retrieve data from two different APIs to test the application with fictitious products**.
+
+### Admin Functions
+- **Creating Products**: Admin users can create new products to be listed in the ecommerce store.
+- **Updating Product**s: Admin users can update existing product details.
+- **Deleting Products**: Admin users can delete products from the store.
+- **Managing Categories**: Admin users can create, update, or delete product categories as needed.
 
 ### Customer Functions
 
@@ -32,6 +38,7 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
 - Spring Data JPA
 - MySQL
 - OpenAPI (for API documentation)
+- JavaMail API (for email sending)
 
 ### Getting Started
 - Prerequisites
@@ -51,6 +58,6 @@ This ecommerce project is built with Spring Boot, providing a platform where a s
   
  Access the application:
 - Open your web browser and navigate to http://localhost:8080.
-- Explore the API documentation:
-
+  
+Explore the API documentation:
 - View detailed API documentation at [Swagger UI](http://localhost:8080/swagger-ui.html).
