@@ -53,6 +53,9 @@ public class AddressServiceImpl implements AddressService {
         if (addressDTO.getCountry() != null) {
             address.setCountry(addressDTO.getCountry());
         }
+        if(addressDTO.getState()!=null){
+            address.setState(addressDTO.getState());
+        }
         if (addressDTO.getCity() != null) {
             address.setCity(addressDTO.getCity());
         }
@@ -90,6 +93,7 @@ public class AddressServiceImpl implements AddressService {
     public Address addressDtoToAddress(AddressDTO addressDTO){
         return Address.builder()
                 .country(addressDTO.getCountry())
+                .state(addressDTO.getState())
                 .city(addressDTO.getCity())
                 .postalCode(addressDTO.getPostalCode())
                 .street(addressDTO.getStreet())
@@ -102,6 +106,7 @@ public class AddressServiceImpl implements AddressService {
         return AddressDTO.builder()
                 .id(address.getId())
                 .country(address.getCountry())
+                .state(address.getState())
                 .city(address.getCity())
                 .postalCode(address.getPostalCode())
                 .street(address.getStreet())
