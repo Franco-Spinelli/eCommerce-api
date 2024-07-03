@@ -3,6 +3,7 @@ package com.mateocuevas.ecommerceapi.controller;
 import com.mateocuevas.ecommerceapi.dto.CartDTO;
 import com.mateocuevas.ecommerceapi.dto.CartItemRequest;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
+import com.mateocuevas.ecommerceapi.dto.OrderDTO;
 import com.mateocuevas.ecommerceapi.entity.Order;
 import com.mateocuevas.ecommerceapi.service.order.OrderService;
 import jakarta.mail.MessagingException;
@@ -26,7 +27,7 @@ public class OrderController {
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
     @GetMapping("/get-all")
-    public ResponseEntity<List<Order>> addProductToCart()  {
+    public ResponseEntity<List<OrderDTO>> getOrders()  {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 }

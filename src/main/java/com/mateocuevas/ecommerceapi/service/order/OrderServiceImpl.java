@@ -3,6 +3,7 @@ package com.mateocuevas.ecommerceapi.service.order;
 import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.dto.EmailDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
+import com.mateocuevas.ecommerceapi.dto.OrderDTO;
 import com.mateocuevas.ecommerceapi.entity.*;
 import com.mateocuevas.ecommerceapi.enums.ShippingConstants;
 import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -63,10 +65,35 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
-    @Override
-    public List<Order> getAllOrders() {
-        return orderRepository.findAll();
+    public List<OrderDTO> getAllOrders() {
+        User user = userService.getUserAuthenticated().orElseThrow();
+        return user.getOrders().stream()
+                .map(this::ordertoOrderDTO)
+                .collect(Collectors.toList());
     }
+    @Override
+    public OrderDTO ordertoOrderDTO(Order order) {
+        if (order == null) {
+            return null;
+        }
+        OrderDTO orderDTO = OrderDTO.builder()
+                .id(order.getId())
+                .hasDelivery(order.isHasDelivery())
+                .code(order.getCode())
+                .date(order.getDate())
+                .totalItems(order.getTotalItems())
+                .totalPrice(order.getTotalPrice())
+                .orderItems(order.getOrderItems().stream()
+                        .map(orderItemService::orderItemtoOrderItemDTO)
+                        .collect(Collectors.toSet()))
+                .customer(order.getCustomer().getFirstName() + " " +order.getCustomer().getLastName())
+                .build();
+        if(order.isHasDelivery()){
+            orderDTO.setDeliveryAddress(addressService.addressToAddressDto(order.getDeliveryAddress()));
+        }
+        return orderDTO;
+    }
+
 
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery) throws MessagingException {
         if(cart.getTotalPrice() != 0){
@@ -74,6 +101,8 @@ public class OrderServiceImpl implements OrderService{
         Order order = Order.builder()
                 .customer(user)
                 .hasDelivery(hasDelivery.isHasDelivery())
+                .date(new Date())
+                .code(generateOrderCode())
                 .totalItems(cart.getTotalItems())
                 .totalPrice(cart.getTotalPrice())
                 .build();
@@ -151,5 +180,19 @@ public class OrderServiceImpl implements OrderService{
         helper.setText(email.getMessage());
         javaMailSender.send(message);
     }
-
+    private String generateOrderCode() {
+        String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+        Random random = new Random();
+        StringBuilder code = new StringBuilder();
+        for (int i = 0; i < 2; i++) {
+            code.append(letters[random.nextInt(letters.length)]);
+        }
+        for (int i = 0; i < 2; i++) {
+            code.append(random.nextInt(10));
+        }
+        for (int i = 0; i < 2; i++) {
+            code.append(letters[random.nextInt(letters.length)]);
+        }
+        return code.toString();
+    }
 }
