@@ -62,7 +62,13 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery) throws MessagingException {
+        if(cart.getTotalPrice() != 0){
         cartService.processCart(cart);
         Order order = Order.builder()
                 .customer(user)
@@ -88,7 +94,9 @@ public class OrderServiceImpl implements OrderService{
         sendMail(email);
         */
         return order;
-
+        }else {
+            throw new RuntimeException("Please add items to the cart");
+        }
     }
     private void addressVerificationsInOrder(Order order,AddressDTO addressDTO, User user){
         if (addressDTO.getStreet() != null) {

@@ -212,6 +212,7 @@ public class ProductServiceImpl implements ProductService {
             category.setName(categoryName);
             category = categoryService.saveCategory(category);
         }
+        product.setPrice(Math.round(product.getPrice() * 100.0) / 100.0);
         product.setCategory(category);
         product.setAdmin(userAdmin);
         product.setStock(20);

@@ -7,8 +7,13 @@ import com.mateocuevas.ecommerceapi.entity.Order;
 import com.mateocuevas.ecommerceapi.service.order.OrderService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.LifecycleState;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -18,6 +23,10 @@ public class OrderController {
     @PostMapping("/create")
     public ResponseEntity<?> addProductToCart(@RequestBody HasDeliveryRequest hasDelivery) throws MessagingException {
         Order order = orderService.makeOrder(hasDelivery);
-        return ResponseEntity.ok("Order success");
+        return ResponseEntity.ok(HttpStatus.CREATED);
+    }
+    @GetMapping("/get-all")
+    public ResponseEntity<List<Order>> addProductToCart()  {
+        return ResponseEntity.ok(orderService.getAllOrders());
     }
 }
