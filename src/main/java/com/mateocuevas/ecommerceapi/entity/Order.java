@@ -2,6 +2,7 @@ package com.mateocuevas.ecommerceapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,6 +26,8 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "address_id")
     private Address deliveryAddress;
+    @Column(nullable = false)
+    @Min(value = 1, message = "totalItems must be greater than 0")
     private Integer totalItems;
     private double totalPrice;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, fetch = FetchType.LAZY)

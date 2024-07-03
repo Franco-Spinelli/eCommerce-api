@@ -118,7 +118,13 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     public Address findAddress(String street, String number, String city) {
-        Optional<Address>optionalAddress = addressRepository.findByStreetAndNumberAndCity(street, number, city);
-        return optionalAddress.orElse(null);
+        User user = userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
+        Set<Address>addresses = user.getAddresses();
+        return addresses.stream()
+                .filter(address -> address.getStreet().equals(street)
+                        && address.getNumber().equals(number)
+                        && address.getCity().equals(city))
+                .findFirst()
+                .orElse(null);
     }
 }

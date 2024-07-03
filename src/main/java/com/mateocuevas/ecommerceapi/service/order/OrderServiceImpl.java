@@ -4,6 +4,7 @@ import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.dto.EmailDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
+import com.mateocuevas.ecommerceapi.enums.ShippingConstants;
 import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
 import com.mateocuevas.ecommerceapi.service.address.AddressService;
@@ -62,7 +63,13 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery) throws MessagingException {
+        if(cart.getTotalPrice() != 0){
         cartService.processCart(cart);
         Order order = Order.builder()
                 .customer(user)
@@ -72,6 +79,7 @@ public class OrderServiceImpl implements OrderService{
                 .build();
         if(hasDelivery.isHasDelivery()){
          addressVerificationsInOrder(order,hasDelivery.getAddress(),user);
+         order.setTotalPrice(cart.getTotalPrice() + ShippingConstants.SHIPPING_COST);
         }
         order = orderRepository.save(order);
       /*
@@ -88,7 +96,9 @@ public class OrderServiceImpl implements OrderService{
         sendMail(email);
         */
         return order;
-
+        }else {
+            throw new RuntimeException("Please add items to the cart");
+        }
     }
     private void addressVerificationsInOrder(Order order,AddressDTO addressDTO, User user){
         if (addressDTO.getStreet() != null) {
