@@ -4,6 +4,7 @@ import com.mateocuevas.ecommerceapi.dto.AddressDTO;
 import com.mateocuevas.ecommerceapi.dto.EmailDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.entity.*;
+import com.mateocuevas.ecommerceapi.enums.ShippingConstants;
 import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
 import com.mateocuevas.ecommerceapi.service.address.AddressService;
@@ -78,6 +79,7 @@ public class OrderServiceImpl implements OrderService{
                 .build();
         if(hasDelivery.isHasDelivery()){
          addressVerificationsInOrder(order,hasDelivery.getAddress(),user);
+         order.setTotalPrice(cart.getTotalPrice() + ShippingConstants.SHIPPING_COST);
         }
         order = orderRepository.save(order);
       /*
