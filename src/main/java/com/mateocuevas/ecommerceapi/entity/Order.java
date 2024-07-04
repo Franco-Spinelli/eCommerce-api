@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,6 +23,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String code;
     private boolean hasDelivery;
     @ManyToOne
     @JoinColumn(name = "address_id")
@@ -30,6 +32,7 @@ public class Order {
     @Min(value = 1, message = "totalItems must be greater than 0")
     private Integer totalItems;
     private double totalPrice;
+    private Date date;
     @OneToMany(mappedBy = "order",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<OrderItem> orderItems = new HashSet<>();
