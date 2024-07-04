@@ -24,10 +24,12 @@ public class Product {
     @Column(nullable = false)
     private String title;
     @Column(nullable = false)
-    private double price;
+    private Double price;
     @Lob
     @Column(length = 1000)
     private String description;
+    private Double discount;
+    private Double discountPrice;
     @Embedded
     private Rating rating;
     @Lob

@@ -34,9 +34,16 @@ public class CartItemServiceImpl implements CartItemService{
         CartItem existingCartItem = findCartItemByProduct(cart, product);
 
         if (existingCartItem != null) {
-            updateCartItem(existingCartItem, quantity, product.getPrice());
-            updateCartTotalPrice(cart, quantity * product.getPrice());
-            return existingCartItem;
+            if(product.getDiscount()>5){
+                updateCartItem(existingCartItem, quantity, product.getDiscountPrice());
+                updateCartTotalPrice(cart, quantity * product.getDiscountPrice());
+                return existingCartItem;
+            }else {
+                updateCartItem(existingCartItem, quantity, product.getPrice());
+                updateCartTotalPrice(cart, quantity * product.getPrice());
+                return existingCartItem;
+            }
+
         }
 
         return createNewCartItem(cart, product, quantity);
@@ -74,8 +81,15 @@ public class CartItemServiceImpl implements CartItemService{
     }
 
     private CartItem createNewCartItem(Cart cart, Product product, int quantity) {
+        double totalPrice;
         cart.setTotalItems(cart.getTotalItems() + 1);
-        double totalPrice = quantity * product.getPrice();
+        if(product.getDiscount()>5){
+            totalPrice = quantity * product.getDiscountPrice();
+
+        }else{
+            totalPrice = quantity * product.getPrice();
+        }
+
         cart.setTotalPrice(cart.getTotalPrice() + totalPrice);
 
         return CartItem.builder()
