@@ -218,6 +218,9 @@ public class ProductServiceImpl implements ProductService {
             category = categoryService.saveCategory(category);
         }
         product.setPrice(Math.round(product.getPrice() * 100.0) / 100.0);
+        if(product.getDiscount() ==null){
+            product.setDiscount(0.0);
+        }
         if(product.getDiscount()>5){
             product.setDiscountPrice(product.getPrice()- (product.getPrice() * (product.getDiscount() / 100.0)));
             product.setDiscountPrice(Math.round(product.getDiscountPrice() * 100.0) / 100.0 );

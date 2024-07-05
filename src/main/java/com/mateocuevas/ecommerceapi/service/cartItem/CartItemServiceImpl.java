@@ -102,14 +102,18 @@ public class CartItemServiceImpl implements CartItemService{
     }
 
     public CartItemDTO createCartItemDTO(CartItem cartItem) {
-        return CartItemDTO.builder()
+
+        CartItemDTO cartItemDTO = CartItemDTO.builder()
                 .id(cartItem.getId())
                 .quantity(cartItem.getQuantity())
                 .title(cartItem.getProduct().getTitle())
-                .price(cartItem.getProduct().getPrice())
                 .img(cartItem.getProduct().getImage())
                 .totalPriceItem(cartItem.getTotalPrice())
                 .build();
+        if(cartItem.getProduct().getDiscount()>5){
+            cartItemDTO.setPrice(cartItem.getProduct().getDiscountPrice());
+        }
+        return cartItemDTO;
     }
 
 }
