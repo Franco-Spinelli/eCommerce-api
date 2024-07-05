@@ -112,6 +112,8 @@ public class CartItemServiceImpl implements CartItemService{
                 .build();
         if(cartItem.getProduct().getDiscount()>5){
             cartItemDTO.setPrice(cartItem.getProduct().getDiscountPrice());
+        }else {
+            cartItemDTO.setPrice(cartItem.getProduct().getPrice());
         }
         return cartItemDTO;
     }

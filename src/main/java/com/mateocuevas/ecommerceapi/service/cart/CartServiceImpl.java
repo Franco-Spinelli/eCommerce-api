@@ -9,6 +9,7 @@ import com.mateocuevas.ecommerceapi.respository.CartRepository;
 import com.mateocuevas.ecommerceapi.service.cartItem.CartItemService;
 import com.mateocuevas.ecommerceapi.service.product.ProductService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +80,26 @@ public class CartServiceImpl implements CartService {
     public CartDTO getUserCart() {
         User user=userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
         Cart cart = cartRepository.getCartByUserId(user.getId());
+        if (cart != null) {
+            updateCartPrices(cart);
+        }
         return createCartDTO(cart);
+    }
+    private void updateCartPrices(Cart cart) {
+        cart.setTotalPrice(0);
+        for (CartItem item : cart.getCartItems()) {
+            Product product = productService.findById(item.getProduct().getId()).orElseThrow(
+                    () -> new EntityNotFoundException("Product not found"));
+            if(product.getDiscount().compareTo(4.9) > 0){
+                item.setProduct(product);
+                item.setTotalPrice(product.getDiscountPrice() * item.getQuantity());
+            }else {
+                item.setProduct(product);
+                item.setTotalPrice(product.getPrice() * item.getQuantity());
+            }
+        cart.setTotalPrice(cart.getTotalPrice() + item.getTotalPrice());
+        }
+        cartRepository.save(cart);
     }
 
     @Override
