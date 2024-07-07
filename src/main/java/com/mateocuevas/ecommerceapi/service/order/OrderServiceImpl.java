@@ -65,12 +65,21 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
-    public List<OrderDTO> getAllOrders() {
+    public List<OrderDTO> getAllOrdersByUser() {
         User user = userService.getUserAuthenticated().orElseThrow();
         return user.getOrders().stream()
                 .map(this::ordertoOrderDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        List<Order>orderList = orderRepository.findAll();
+        return orderList.stream()
+                .map(this::ordertoOrderDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public OrderDTO ordertoOrderDTO(Order order) {
         if (order == null) {

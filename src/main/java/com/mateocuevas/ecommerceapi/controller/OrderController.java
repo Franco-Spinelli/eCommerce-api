@@ -26,8 +26,12 @@ public class OrderController {
         Order order = orderService.makeOrder(hasDelivery);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
-    @GetMapping("/get-all")
+    @GetMapping("/get-all-user")
     public ResponseEntity<List<OrderDTO>> getOrders()  {
+        return ResponseEntity.ok(orderService.getAllOrdersByUser());
+    }
+    @GetMapping("/admin/get-all-admin")
+    public ResponseEntity<List<OrderDTO>> getAllOrders()  {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 }

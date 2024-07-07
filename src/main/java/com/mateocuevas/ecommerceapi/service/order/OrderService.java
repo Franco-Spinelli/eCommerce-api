@@ -12,6 +12,7 @@ import java.util.List;
 public interface OrderService {
     Order saveOrder(Order order);
     Order makeOrder(HasDeliveryRequest hasDelivery) throws MessagingException;
+    List<OrderDTO>getAllOrdersByUser();
     List<OrderDTO>getAllOrders();
     OrderDTO ordertoOrderDTO(Order order);
 }
