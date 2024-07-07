@@ -34,8 +34,10 @@ public class AuthServiceImpl implements AuthService {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
         UserDetails user = userService.findByUsername(loginRequest.getUsername()).orElseThrow();
         String token = jwtService.getToken(user);
+        String role = jwtService.getRoleFromUser(user);
         return AuthResponse.builder()
                 .token(token)
+                .role(role)
                 .build();
     }
 

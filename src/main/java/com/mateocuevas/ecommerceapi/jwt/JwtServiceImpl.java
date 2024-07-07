@@ -37,7 +37,7 @@ public class JwtServiceImpl implements JwtService{
                 .compact();
     }
 
-    private String getRoleFromUser(UserDetails user) {
+    public String getRoleFromUser(UserDetails user) {
         return user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()

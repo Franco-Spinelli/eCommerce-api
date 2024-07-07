@@ -1,5 +1,6 @@
 package com.mateocuevas.ecommerceapi.auth.dto;
 
+import com.mateocuevas.ecommerceapi.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,4 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AuthResponse {
     private String token;
+    private String role;
 }
