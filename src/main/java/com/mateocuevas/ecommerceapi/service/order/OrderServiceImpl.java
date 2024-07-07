@@ -5,6 +5,7 @@ import com.mateocuevas.ecommerceapi.dto.EmailDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.dto.OrderDTO;
 import com.mateocuevas.ecommerceapi.entity.*;
+import com.mateocuevas.ecommerceapi.enums.OrderStatus;
 import com.mateocuevas.ecommerceapi.enums.ShippingConstants;
 import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
@@ -91,6 +92,7 @@ public class OrderServiceImpl implements OrderService{
                 .code(order.getCode())
                 .date(order.getDate())
                 .totalItems(order.getTotalItems())
+                .status(order.getStatus())
                 .totalPrice(order.getTotalPrice())
                 .orderItems(order.getOrderItems().stream()
                         .map(orderItemService::orderItemtoOrderItemDTO)
@@ -112,6 +114,7 @@ public class OrderServiceImpl implements OrderService{
                 .hasDelivery(hasDelivery.isHasDelivery())
                 .date(new Date())
                 .code(generateOrderCode())
+                .status(OrderStatus.PENDING)
                 .totalItems(cart.getTotalItems())
                 .totalPrice(cart.getTotalPrice())
                 .build();

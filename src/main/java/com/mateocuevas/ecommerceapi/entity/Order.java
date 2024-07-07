@@ -1,6 +1,7 @@
 package com.mateocuevas.ecommerceapi.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.mateocuevas.ecommerceapi.enums.OrderStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -39,7 +40,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
-
+    private OrderStatus status;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
