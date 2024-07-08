@@ -16,6 +16,7 @@ import com.mateocuevas.ecommerceapi.service.orderItem.OrderItemService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -191,6 +192,15 @@ public class OrderServiceImpl implements OrderService{
         helper.setSubject(email.getAffair());
         helper.setText(email.getMessage());
         javaMailSender.send(message);
+    }
+
+    public Order changeOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            order.setStatus(newStatus);
+            return orderRepository.save(order);
+        }
+        throw new EntityNotFoundException();
     }
     private String generateOrderCode() {
         String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};

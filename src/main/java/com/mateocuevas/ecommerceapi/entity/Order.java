@@ -40,6 +40,7 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
     private User customer;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     @Override
     public boolean equals(Object o) {

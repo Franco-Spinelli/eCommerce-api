@@ -38,7 +38,6 @@ public class SecurityConfig {
                                 .requestMatchers("/api/products/get-categories").permitAll()
                                 .requestMatchers("/v3/**").permitAll()
                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .requestMatchers("/api/order/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionManager->
