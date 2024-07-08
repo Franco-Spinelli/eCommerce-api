@@ -1,15 +1,11 @@
 package com.mateocuevas.ecommerceapi.controller;
 
-import com.mateocuevas.ecommerceapi.dto.CartDTO;
-import com.mateocuevas.ecommerceapi.dto.CartItemRequest;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.dto.OrderDTO;
 import com.mateocuevas.ecommerceapi.entity.Order;
 import com.mateocuevas.ecommerceapi.service.order.OrderService;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
-import org.apache.catalina.LifecycleState;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +22,8 @@ public class OrderController {
         Order order = orderService.makeOrder(hasDelivery);
         return ResponseEntity.ok(HttpStatus.CREATED);
     }
-    @GetMapping("/get-all")
+    @GetMapping("/get-all-user")
     public ResponseEntity<List<OrderDTO>> getOrders()  {
-        return ResponseEntity.ok(orderService.getAllOrders());
+        return ResponseEntity.ok(orderService.getAllOrdersByUser());
     }
 }

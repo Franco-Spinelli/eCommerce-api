@@ -16,7 +16,7 @@ public interface JwtService {
     String getToken(UserDetails user);
 
     String getUsernameFromToken(String token);
-
+    String getRoleFromUser(UserDetails user);
     boolean isTokenValid(String token, UserDetails userDetails);
 
     <T> T getClaim(String token, Function<Claims,T> claimsResolver);

@@ -5,6 +5,7 @@ import com.mateocuevas.ecommerceapi.dto.EmailDTO;
 import com.mateocuevas.ecommerceapi.dto.HasDeliveryRequest;
 import com.mateocuevas.ecommerceapi.dto.OrderDTO;
 import com.mateocuevas.ecommerceapi.entity.*;
+import com.mateocuevas.ecommerceapi.enums.OrderStatus;
 import com.mateocuevas.ecommerceapi.enums.ShippingConstants;
 import com.mateocuevas.ecommerceapi.exception.NoDeliveryAddressFoundException;
 import com.mateocuevas.ecommerceapi.respository.OrderRepository;
@@ -15,6 +16,7 @@ import com.mateocuevas.ecommerceapi.service.orderItem.OrderItemService;
 import com.mateocuevas.ecommerceapi.service.user.UserService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -65,12 +67,21 @@ public class OrderServiceImpl implements OrderService{
         return order;
     }
 
-    public List<OrderDTO> getAllOrders() {
+    public List<OrderDTO> getAllOrdersByUser() {
         User user = userService.getUserAuthenticated().orElseThrow();
         return user.getOrders().stream()
                 .map(this::ordertoOrderDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<OrderDTO> getAllOrders() {
+        List<Order>orderList = orderRepository.findAll();
+        return orderList.stream()
+                .map(this::ordertoOrderDTO)
+                .collect(Collectors.toList());
+    }
+
     @Override
     public OrderDTO ordertoOrderDTO(Order order) {
         if (order == null) {
@@ -82,6 +93,7 @@ public class OrderServiceImpl implements OrderService{
                 .code(order.getCode())
                 .date(order.getDate())
                 .totalItems(order.getTotalItems())
+                .status(order.getStatus())
                 .totalPrice(order.getTotalPrice())
                 .orderItems(order.getOrderItems().stream()
                         .map(orderItemService::orderItemtoOrderItemDTO)
@@ -103,6 +115,7 @@ public class OrderServiceImpl implements OrderService{
                 .hasDelivery(hasDelivery.isHasDelivery())
                 .date(new Date())
                 .code(generateOrderCode())
+                .status(OrderStatus.PENDING)
                 .totalItems(cart.getTotalItems())
                 .totalPrice(cart.getTotalPrice())
                 .build();
@@ -179,6 +192,15 @@ public class OrderServiceImpl implements OrderService{
         helper.setSubject(email.getAffair());
         helper.setText(email.getMessage());
         javaMailSender.send(message);
+    }
+
+    public Order changeOrderStatus(Long orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId).orElse(null);
+        if (order != null) {
+            order.setStatus(newStatus);
+            return orderRepository.save(order);
+        }
+        throw new EntityNotFoundException();
     }
     private String generateOrderCode() {
         String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};

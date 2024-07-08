@@ -17,6 +17,7 @@ public class ProductApi {
     private String description;
     private String category;
     private Double price;
+    private Double discountPercentage;
     private Integer stock;
     private List<String> tags;
     private String brand;
@@ -33,14 +34,12 @@ public class ProductApi {
     private List<String> images;
     private String thumbnail;
 
-    // Getters and setters
+
 
     public static class DimensionsDTO {
         private Double width;
         private Double height;
         private Double depth;
-
-        // Getters and setters
     }
 
     public static class ReviewDTO {
@@ -49,8 +48,6 @@ public class ProductApi {
         private String date;
         private String reviewerName;
         private String reviewerEmail;
-
-        // Getters and setters
     }
 
     public static class MetaDTO {
@@ -58,7 +55,5 @@ public class ProductApi {
         private String updatedAt;
         private String barcode;
         private String qrCode;
-
-        // Getters and setters
     }
 }

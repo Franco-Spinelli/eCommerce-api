@@ -100,6 +100,8 @@ public class ProductServiceImpl implements ProductService {
              .title(product.getTitle())
              .price(product.getPrice())
              .description(product.getDescription())
+             .discount(product.getDiscount())
+             .discountPrice(product.getDiscountPrice())
              .rating(product.getRating())
              .image(product.getImage())
              .category(product.getCategory().getName())
@@ -112,6 +114,8 @@ public class ProductServiceImpl implements ProductService {
                 .title(productDTO.getTitle())
                 .price(productDTO.getPrice())
                 .description(productDTO.getDescription())
+                .discount(productDTO.getDiscount())
+                .discountPrice(productDTO.getDiscountPrice())
                 .rating(productDTO.getRating())
                 .image(productDTO.getImage())
                 .category(categoryService.createCategory(productDTO.getCategory()))
@@ -137,7 +141,8 @@ public class ProductServiceImpl implements ProductService {
                 .build();
         return Product.builder()
                 .id(null)
-                .price(productApi.getPrice().floatValue())
+                .price(productApi.getPrice())
+                .discount(productApi.getDiscountPercentage())
                 .admin(userAdmin)
                 .Stock(productApi.getStock())
                 .title(productApi.getTitle())
@@ -213,6 +218,15 @@ public class ProductServiceImpl implements ProductService {
             category = categoryService.saveCategory(category);
         }
         product.setPrice(Math.round(product.getPrice() * 100.0) / 100.0);
+        if(product.getDiscount() ==null){
+            product.setDiscount(0.0);
+        }
+        if(product.getDiscount()>5){
+            product.setDiscountPrice(product.getPrice()- (product.getPrice() * (product.getDiscount() / 100.0)));
+            product.setDiscountPrice(Math.round(product.getDiscountPrice() * 100.0) / 100.0 );
+        }else {
+            product.setDiscount(0.0);
+        }
         product.setCategory(category);
         product.setAdmin(userAdmin);
         product.setStock(20);
