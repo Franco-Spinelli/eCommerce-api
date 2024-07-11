@@ -3,6 +3,7 @@ package com.mateocuevas.ecommerceapi.service.admin;
 import com.mateocuevas.ecommerceapi.dto.ProductDTO;
 import com.mateocuevas.ecommerceapi.entity.Category;
 import com.mateocuevas.ecommerceapi.entity.Product;
+import com.mateocuevas.ecommerceapi.entity.Rating;
 import com.mateocuevas.ecommerceapi.entity.User;
 import com.mateocuevas.ecommerceapi.enums.UserRole;
 import com.mateocuevas.ecommerceapi.exception.ProductAlreadyExistsException;
@@ -13,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -28,6 +30,10 @@ public class AdminServiceImpl implements AdminService {
             throw new ProductAlreadyExistsException("The product already exist!", productDTO.getTitle());
         }
         Product product = productService.productDtoToProduct(productDTO);
+        product.setRating(Rating.builder()
+                        .rate(0)
+                        .count(0)
+                        .build());
         product.setAdmin(userService.findByRole(UserRole.ROLE_ADMIN).orElseThrow());
         productService.save(product);
         return productDTO;
@@ -41,6 +47,7 @@ public class AdminServiceImpl implements AdminService {
         productService.deleteById(id);
         return "Product has been successfully deleted.";
     }
+
     /**
      * Updates an existing product with information provided in the ProductDTO.
      *
@@ -69,9 +76,15 @@ public class AdminServiceImpl implements AdminService {
                 existingProduct.setDescription(productDTO.getDescription());
             }
             if (productDTO.getTitle() != null) {
+
                 if(!productService.existByTitle(productDTO.getTitle())) {
                     existingProduct.setTitle(productDTO.getTitle());
-                }else {
+                } else if (productService.existByTitle(productDTO.getTitle())) {
+                    ProductDTO product = productService.findByTitle(productDTO.getTitle());
+                    if(Objects.equals(product.getId(), productDTO.getId())){
+                        existingProduct.setTitle(productDTO.getTitle());
+                    }
+                } else {
                     throw new ProductAlreadyExistsException("One product is already exist with this title",productDTO.getTitle());
                 }
             }

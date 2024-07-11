@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,9 +34,12 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/delete-product")
-    public ResponseEntity<String> deleteProduct(@RequestBody Long id) {
-        return ResponseEntity.ok(adminService.deleteProduct(id));
+    @DeleteMapping("/delete-product/{id}")
+    public ResponseEntity<Map<String, String>> deleteProduct(@PathVariable Long id) {
+        String message = adminService.deleteProduct(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/get-all-orders")
     public ResponseEntity<List<OrderDTO>> getAllOrders()  {
