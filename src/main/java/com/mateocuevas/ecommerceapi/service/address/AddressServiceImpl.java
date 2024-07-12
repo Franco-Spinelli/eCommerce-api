@@ -76,9 +76,9 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public String deleteAddress(AddressDTO addressDTO) {
+    public String deleteAddress(Long id) {
         User user =userService.getUserAuthenticated().orElseThrow(() -> new IllegalStateException("Unauthenticated user"));
-        addressRepository.deleteById(addressDTO.getId());
+        addressRepository.deleteById(id);
         return "Successful delete";
     }
 
