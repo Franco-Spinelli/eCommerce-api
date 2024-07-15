@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -45,10 +47,12 @@ public class UserController {
      * @param addressDTO The request containing the info of the address to delete.
      * @return ResponseEntity with a message.
      */
-    @DeleteMapping("/delete-address")
-    public ResponseEntity<String> deleteAddress(@RequestBody AddressDTO addressDTO){
-        String msj= addressService.deleteAddress(addressDTO);
-        return ResponseEntity.ok(msj);
+    @DeleteMapping("/delete-address/{id}")
+    public ResponseEntity<Map<String, String>> deleteAddress(@PathVariable Long id){
+        String msj= addressService.deleteAddress(id);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", msj);
+        return ResponseEntity.ok(response);
     }
 
     /**

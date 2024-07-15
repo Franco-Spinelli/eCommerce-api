@@ -10,7 +10,7 @@ public interface AddressService {
 
     Address addAddress(Address address);
     AddressDTO updateAddress(AddressDTO addressDTO);
-    String deleteAddress(AddressDTO addressDTO);
+    String deleteAddress(Long id);
     Set<AddressDTO> getAddresses();
     Address addressDtoToAddress(AddressDTO addressDTO);
     AddressDTO addressToAddressDto(Address address);
