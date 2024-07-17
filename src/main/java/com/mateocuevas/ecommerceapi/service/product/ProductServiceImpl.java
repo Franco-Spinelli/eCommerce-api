@@ -196,6 +196,18 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
+    @Override
+    public void updateRating(Long idProduct, Double rate) {
+       Product product = productRepository.findById(idProduct).orElseThrow(EntityNotFoundException::new);
+       Rating rating = product.getRating();
+        int currentCount = rating.getCount();
+        double currentRate = rating.getRate();
+        double updatedRate = ((currentRate * currentCount) + rate) / (currentCount + 1);
+        rating.setCount(currentCount + 1);
+        rating.setRate(updatedRate);
+        productRepository.save(product);
+    }
+
     /**
      * This method assigns an admin user to a product and saves it into the local database.
      * It also fetches or creates the appropriate category for the product.
