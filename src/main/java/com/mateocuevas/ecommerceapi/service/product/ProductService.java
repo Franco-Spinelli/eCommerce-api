@@ -29,6 +29,6 @@ public interface ProductService {
     void fetchAndSaveProductsFromExtendedSource();
     boolean existsByTitle(String title);
     Product save(Product product);
-
+    void updateRating(Long idProduct, Double rate);
 
 }
