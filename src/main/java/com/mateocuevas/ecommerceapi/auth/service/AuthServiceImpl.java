@@ -65,6 +65,7 @@ public class AuthServiceImpl implements AuthService {
 
             return AuthResponse.builder()
                     .token(jwtService.getToken(user))
+                    .role(jwtService.getRoleFromUser(user))
                     .build();
         } else {
             throw new EmailAlreadyExistsException("The email address is already registered.");
