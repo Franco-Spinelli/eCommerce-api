@@ -66,6 +66,15 @@ public class AdminServiceImpl implements AdminService {
             if (productDTO.getStock() != null) {
                 existingProduct.setStock(productDTO.getStock());
             }
+            if(productDTO.getDiscount()!=null){
+                if(productDTO.getDiscount()>5){
+                    existingProduct.setDiscount(productDTO.getDiscount());
+                    existingProduct.setDiscountPrice(existingProduct.getPrice()- (existingProduct.getPrice() * (existingProduct.getDiscount() / 100.0)));
+                    existingProduct.setDiscountPrice(Math.round(existingProduct.getDiscountPrice() * 100.0) / 100.0 );
+                }else {
+                    existingProduct.setDiscount(0.0);
+                }
+            }
             if (productDTO.getPrice() != null) {
                 existingProduct.setPrice(productDTO.getPrice());
             }
