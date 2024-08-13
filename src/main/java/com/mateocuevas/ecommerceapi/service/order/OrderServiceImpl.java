@@ -124,19 +124,32 @@ public class OrderServiceImpl implements OrderService{
          order.setTotalPrice(cart.getTotalPrice() + ShippingConstants.SHIPPING_COST);
         }
         order = orderRepository.save(order);
-      /*
+
         EmailDTO email = EmailDTO.builder()
                 .receiver(user.getUsername())
                 .affair("Order Confirmation")
-                .message("Dear " + user.getFirstName() + ",\n\n"
-                        + "Your order has been confirmed. Here are the details:\n"
-                        + "Order ID: " + order.getId() + "\n"
-                        + "Total Amount: " + order.getTotalPrice() + "\n\n"
-                        + "Thank you for shopping with us!\n\n"
-                        + "Best regards,\nThe Ecommerce Team")
+                .message("<html>"
+                        + "<body style=\"font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 0;\">"
+                        + "<div style=\"max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0;\">"
+                        + "<div style=\"background-color: #4567b7; height: 60px; width: 100%; display: flex; align-items: center; justify-content: center; color: white;\">"
+                        + "<span style=\"font-size: 24px; font-weight: bold;\">Martinez eCommerce</span>"
+                        + "</div>"
+                        + "<h2 style=\"color: #333;\">Order Confirmation</h2>"
+                        + "<p>Dear " + user.getFirstName() + ",</p>"
+                        + "<p>Thank you for your order! Your order has been confirmed, and we are processing it. Below are the details:</p>"
+                        + "<p><strong>Order ID:</strong> " + order.getId() + "</p>"
+                        + "<p><strong>Total Amount:</strong> $" + order.getTotalPrice() + "</p>"
+                        + "<p>We appreciate your business and hope to serve you again soon.</p>"
+                        + "<p style=\"margin-top: 30px;\">Best regards,<br/>"
+                        + "<strong>The Martinez Ecommerce Team</strong></p>"
+                        + "</div>"
+                        + "</body>"
+                        + "</html>")
+
+
                 .build();
         sendMail(email);
-        */
+
         return order;
         }else {
             throw new RuntimeException("Please add items to the cart");
@@ -190,7 +203,7 @@ public class OrderServiceImpl implements OrderService{
         MimeMessageHelper helper = new MimeMessageHelper(message,true,"UTF-8");
         helper.setTo(email.getReceiver());
         helper.setSubject(email.getAffair());
-        helper.setText(email.getMessage());
+        helper.setText(email.getMessage(),true);
         javaMailSender.send(message);
     }
 
@@ -203,18 +216,8 @@ public class OrderServiceImpl implements OrderService{
         throw new EntityNotFoundException();
     }
     private String generateOrderCode() {
-        String[] letters = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-        Random random = new Random();
-        StringBuilder code = new StringBuilder();
-        for (int i = 0; i < 2; i++) {
-            code.append(letters[random.nextInt(letters.length)]);
-        }
-        for (int i = 0; i < 2; i++) {
-            code.append(random.nextInt(10));
-        }
-        for (int i = 0; i < 2; i++) {
-            code.append(letters[random.nextInt(letters.length)]);
-        }
-        return code.toString();
+        UUID uuid = UUID.randomUUID();
+        String uuidStr = uuid.toString().replaceAll("-", "");
+        return uuidStr.substring(0, 6).toUpperCase();
     }
 }
