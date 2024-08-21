@@ -17,4 +17,6 @@ public interface OrderService {
     List<OrderDTO>getAllOrders();
     Order changeOrderStatus(Long orderId, OrderStatus newStatus);
     OrderDTO ordertoOrderDTO(Order order);
+    void toggleArchiveOrderForCustomer(Long orderId, Long customerId);
+    void toggleArchiveOrderForAdmin(Long orderId);
 }

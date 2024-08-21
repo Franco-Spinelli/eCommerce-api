@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 @Data
 @Builder
@@ -25,5 +24,7 @@ public class OrderDTO {
     private OrderStatus status;
     private Set<OrderItemDTO> orderItems;
     private String customer;
+    private boolean archivedByCustomer = false;
+    private boolean archivedByAdmin = false;
 
 }

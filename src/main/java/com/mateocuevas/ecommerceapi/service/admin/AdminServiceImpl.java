@@ -73,6 +73,7 @@ public class AdminServiceImpl implements AdminService {
                     existingProduct.setDiscountPrice(Math.round(existingProduct.getDiscountPrice() * 100.0) / 100.0 );
                 }else {
                     existingProduct.setDiscount(0.0);
+                    existingProduct.setDiscountPrice(null);
                 }
             }
             if (productDTO.getPrice() != null) {
