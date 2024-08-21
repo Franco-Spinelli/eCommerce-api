@@ -45,7 +45,7 @@ public class AdminController {
     public ResponseEntity<List<OrderDTO>> getAllOrders()  {
         return ResponseEntity.ok(orderService.getAllOrders());
     }
-    @PutMapping("/{orderId}/change-status")
+    @PutMapping("/orders/{orderId}/change-status")
     public ResponseEntity<Order> changeOrderStatus(@PathVariable("orderId") Long orderId, @RequestBody Map<String, String> statusMap) {
         String newStatusStr = statusMap.get("status");
         if (newStatusStr == null || newStatusStr.isEmpty()) {
@@ -61,6 +61,11 @@ public class AdminController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+    @PutMapping("/orders/{orderId}/toggle-archive")
+    public ResponseEntity<?> toggleArchiveOrder(@PathVariable Long orderId) {
+        orderService.toggleArchiveOrderForAdmin(orderId);
+        return ResponseEntity.ok().build();
     }
 
 }

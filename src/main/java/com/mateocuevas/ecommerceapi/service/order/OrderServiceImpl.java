@@ -106,7 +106,20 @@ public class OrderServiceImpl implements OrderService{
         return orderDTO;
     }
 
-
+    /**
+     * Creates and saves an order based on the provided user, cart, and delivery request.
+     *
+     * This method processes the given cart, generates a new order, and saves it to the database.
+     * If delivery is requested, the order's total price is updated to include the shipping cost.
+     * After the order is saved, a confirmation email is sent to the user.
+     *
+     * @param user The user placing the order.
+     * @param cart The cart containing items to be ordered.
+     * @param hasDelivery Indicates whether the order requires delivery and includes the delivery address if needed.
+     * @return The created and saved Order object.
+     * @throws MessagingException If an error occurs while sending the confirmation email.
+     * @throws RuntimeException If the cart is empty (total price is zero).
+     */
     private Order createAndSaveOrder(User user, Cart cart, HasDeliveryRequest hasDelivery) throws MessagingException {
         if(cart.getTotalPrice() != 0){
         cartService.processCart(cart);
@@ -215,9 +228,57 @@ public class OrderServiceImpl implements OrderService{
         }
         throw new EntityNotFoundException();
     }
+    /**
+     * Generates a unique order code.
+     *
+     * This method creates a random UUID, removes the hyphens from its string representation,
+     * and returns the first 6 characters in uppercase. The resulting code is intended to be
+     * used as a short and unique identifier for orders.
+     *
+     * @return A 6-character unique order code in uppercase.
+     */
     private String generateOrderCode() {
         UUID uuid = UUID.randomUUID();
         String uuidStr = uuid.toString().replaceAll("-", "");
         return uuidStr.substring(0, 6).toUpperCase();
+    }
+    /**
+     * Toggles the archived status of an order for a customer.
+     *
+     * This method retrieves an order by its ID and checks if the specified customer is the owner of the order.
+     * If the customer owns the order, it toggles the `archivedByCustomer` status of the order and saves the updated order.
+     * If the customer is not authorized to archive the order, an exception is thrown.
+     *
+     * @param orderId The ID of the order to be toggled.
+     * @param customerId The ID of the customer attempting to toggle the archive status.
+     * @throws EntityNotFoundException If the order is not found in the repository.
+     * @throws RuntimeException If the customer is not authorized to archive the order.
+     */
+    public void toggleArchiveOrderForCustomer(Long orderId, Long customerId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+
+        if (order.getCustomer().getId().equals(customerId)) {
+            order.setArchivedByCustomer(!order.isArchivedByCustomer());
+            orderRepository.save(order);
+        } else {
+            throw new RuntimeException("User not authorized to archive this order");
+        }
+    }
+    /**
+     * Toggles the archived status of an order for an admin.
+     *
+     * This method retrieves an order by its ID and toggles the `archivedByAdmin` status of the order.
+     * The updated order is then saved to the repository. This method does not check for authorization,
+     * assuming that the caller has admin privileges.
+     *
+     * @param orderId The ID of the order to be toggled.
+     * @throws EntityNotFoundException If the order is not found in the repository.
+     */
+    public void toggleArchiveOrderForAdmin(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+        order.setArchivedByAdmin(!order.isArchivedByAdmin());
+        orderRepository.save(order);
     }
 }

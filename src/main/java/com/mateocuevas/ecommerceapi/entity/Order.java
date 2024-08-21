@@ -42,6 +42,10 @@ public class Order {
     private User customer;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
+    @Column(nullable = false)
+    private boolean archivedByCustomer = false;
+    @Column(nullable = false)
+    private boolean archivedByAdmin = false;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
